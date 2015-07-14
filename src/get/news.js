@@ -81,16 +81,35 @@ async function getNewsArticles(app) {
 
       for (let i = 0; i < module.contents.length; i++) {
         let content = module.contents[i];
+        if (!content.hasOwnProperty('photo') || !content.photo.hasOwnProperty('attrs')) {
+          continue;
+        }
+        let photo_attrs = content.photo.attrs;
+        let photo_url = `${photo_attrs.publishurl}${photo_attrs.basename}`;
+        let thumbnail_url = `${photo_attrs.publishurl}${photo_attrs.smallbasename}`;
+
         let article = new Article({
           caption: content.caption,
-          img_url: content.photo.crops.small_crop || undefined,
+          photo: {
+            full: {
+              url: photo_url,
+              width: photo_attrs.oimagewidth || null,
+              height: photo_attrs.oimageheight || null
+            },
+            thumbnail: {
+              url: photo_attrs.thumbnail || null,
+              width: photo_attrs.simagewidth || null,
+              height: photo_attrs.simageheight || null
+            }
+          },
           module: module.name,
-          section: content.taxonomy.section || undefined,
-          subsection: content.taxonomy.subsection || undefined,
+          section: content.taxonomy.section || null,
+          subsection: content.taxonomy.subsection || null,
           source: site,
           summary: content.summary,
-          title: content.headline,
-          url: content.pageurl.shortUrl || undefined
+          headline: content.headline,
+          subheadline: content.subheadline || null,
+          url: content.pageurl.shortUrl || null
         });
         articles.push(article);
 

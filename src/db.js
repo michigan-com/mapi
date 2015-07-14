@@ -7,7 +7,6 @@ if (typeof db === 'undefined') {
   throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
 }
 
-
 var Schema = mongoose.Schema;
 
 const defaults = {
@@ -26,13 +25,25 @@ function disconnect() {
 
 var ArticleSchema = new Schema({
   caption: { type: String },
-  img_url: { type: String },
+  photo: {
+    full: {
+      url: { type: String },
+      width: { type: Number, default: null },
+      height: { type: Number, default: null }
+    },
+    thumbnail: {
+      url: { type: String, default: null },
+      width: { type: Number, default: null },
+      height: { type: Number, default: null }
+    }
+  },
   module: { type: String },
   section: { type: String },
   subsection: { type: String },
   source: { type: String, trim: true },
   summary: { type: String },
-  title: { type: String },
+  headline: { type: String },
+  subheadline: { type: String, default: null },
   created_at: { type: Date, default: Date.now },
   url: { type: String }
 });
