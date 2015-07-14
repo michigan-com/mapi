@@ -118,7 +118,7 @@ async function getNewsArticles(app) {
           source: site,
           summary: content.summary,
           headline: content.headline,
-          subheadline: content.subheadline || null,
+          subheadline: content.attrs.brief || null,
           url: content.pageurl.shortUrl || null
         });
         articles.push(article);

@@ -14,7 +14,8 @@ import mail from './mail';
 import logger from './logger';
 import news from './get/news';
 import { connect } from './db';
-import routes from './routes/index';
+import index_routes from './routes/index';
+import v1_routes from './routes/v1';
 import { log_level, db } from '../config';
 
 if (typeof db === 'undefined') {
@@ -41,7 +42,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(BASE_DIR, 'public')));
 app.use(log4js.connectLogger(logger));
 
-app.use('/', routes);
+app.use('/', index_routes);
+app.use('/v1/', v1_routes);
 
 connect(db);
 mongoose.connection.on('error', logger.error);
