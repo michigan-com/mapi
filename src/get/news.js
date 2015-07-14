@@ -85,8 +85,17 @@ async function getNewsArticles(app) {
           continue;
         }
         let photo_attrs = content.photo.attrs;
-        let photo_url = `${photo_attrs.publishurl}${photo_attrs.basename}`;
-        let thumbnail_url = `${photo_attrs.publishurl}${photo_attrs.smallbasename}`;
+        let photo_url = photo_attrs.publishurl + photo_attrs.basename;
+        let thumbnail_url = null;
+        if (typeof photo_attrs.smallbasename === 'string') {
+          thumbnail_url = photo_attrs.publishurl + photo_attrs.smallbasename;
+        } else if (typeof photo_attrs.thumbnailPath === 'string' ) {
+          thumbnail_url = photo_attrs.publishurl + photo_attrs.thumbnailPath;
+        }
+
+        if (typeof thumbnail_url !== 'string') {
+          console.log(thumbnail_url);
+        }
 
         let article = new Article({
           photo: {
@@ -98,7 +107,7 @@ async function getNewsArticles(app) {
               height: photo_attrs.oimageheight || null
             },
             thumbnail: {
-              url: photo_attrs.thumbnail || null,
+              url: thumbnail_url || null,
               width: photo_attrs.simagewidth || null,
               height: photo_attrs.simageheight || null
             }
