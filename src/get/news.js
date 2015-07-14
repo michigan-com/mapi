@@ -89,8 +89,9 @@ async function getNewsArticles(app) {
         let thumbnail_url = `${photo_attrs.publishurl}${photo_attrs.smallbasename}`;
 
         let article = new Article({
-          caption: content.caption,
           photo: {
+            caption: photo_attrs.caption || null,
+            credit: photo_attrs.credit || null,
             full: {
               url: photo_url,
               width: photo_attrs.oimagewidth || null,

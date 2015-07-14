@@ -24,8 +24,9 @@ function disconnect() {
 }
 
 var ArticleSchema = new Schema({
-  caption: { type: String },
   photo: {
+    caption: { type: String, default: null },
+    credit: { type: String, default: null },
     full: {
       url: { type: String },
       width: { type: Number, default: null },
