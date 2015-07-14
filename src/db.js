@@ -2,6 +2,7 @@
 
 import mongoose from 'mongoose';
 import { db } from '../config';
+import logger from './logger';
 
 if (typeof db === 'undefined') {
   throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
@@ -16,10 +17,12 @@ const defaults = {
 };
 
 function connect(dbString=db, options=defaults) {
+  logger.info(`[SERVER] Connecting to: ${dbString}`);
   mongoose.connect(dbString, options);
 }
 
 function disconnect() {
+  logger.info(`[SERVER] Disconnecting from mongodb ...`);
   mongoose.disconnect();
 }
 

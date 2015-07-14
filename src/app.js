@@ -16,7 +16,7 @@ import news from './get/news';
 import { connect } from './db';
 import index_routes from './routes/index';
 import v1_routes from './routes/v1';
-import { log_level, db } from '../config';
+import { log_level, db, testDb } from '../config';
 
 if (typeof db === 'undefined') {
   throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
@@ -26,10 +26,7 @@ var app = express();
 app.http().io();
 
 var BASE_DIR = path.dirname(__dirname);
-
-if (app.get('env') === 'production') {
-  logger.setLevel('INFO');
-}
+var _db = db;
 
 app.set('views', path.join(BASE_DIR, 'views'));
 app.set('view engine', 'jade');
@@ -45,13 +42,20 @@ app.use(log4js.connectLogger(logger));
 app.use('/', index_routes);
 app.use('/v1/', v1_routes);
 
-connect(db);
+if (app.get('env') === 'production') {
+  logger.setLevel('INFO');
+}
+
+if (app.get('env') === 'testing') {
+  _db = testDb || 'mongodb://localhost:27017/mapi-test';
+} else {
+  news.init(app);
+}
+
+connect(_db);
 mongoose.connection.on('error', logger.error);
-mongoose.connection.on('disconnected', connect);
 
-news.init(app);
-
-if (app.get('env') === 'development') {
+if (app.get('env') === 'development' || app.get('env') === 'testing') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
@@ -89,12 +93,12 @@ var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 logger.info(`[SERVER] Environment: ${app.get('env')}`);
-app.listen(port, '0.0.0.0', function() {
+var server = app.listen(port, '0.0.0.0', function() {
   let host = this.address();
   logger.info(`[SERVER] Started on ${host.address}:${host.port}`);
 });
 
-app.on('close', function() {
+server.on('close', function() {
   logger.info("[SERVER] Closed nodejs application, disconnecting mongodb ...");
   mongoose.disconnect();
 });
@@ -110,3 +114,5 @@ function normalizePort(val) {
   if (port >= 0) return port;
   return false;
 }
+
+module.exports = server;

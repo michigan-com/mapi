@@ -75,13 +75,14 @@ async function getNewsArticles(app) {
       }
 
       if (!('contents' in module)) {
-        logger.debug('Could not find contents list in module ${module.name}, skipping ...');
+        logger.debug(`Could not find contents list in module ${module.name}, skipping ...`);
         continue;
       }
 
       for (let i = 0; i < module.contents.length; i++) {
         let content = module.contents[i];
         if (!content.hasOwnProperty('photo') || !content.photo.hasOwnProperty('attrs')) {
+          logger.debug(`Could not find photo object in content object for ${content.headline}, skipping ...`);
           continue;
         }
         let photo_attrs = content.photo.attrs;
@@ -91,10 +92,6 @@ async function getNewsArticles(app) {
           thumbnail_url = photo_attrs.publishurl + photo_attrs.smallbasename;
         } else if (typeof photo_attrs.thumbnailPath === 'string' ) {
           thumbnail_url = photo_attrs.publishurl + photo_attrs.thumbnailPath;
-        }
-
-        if (typeof thumbnail_url !== 'string') {
-          console.log(thumbnail_url);
         }
 
         let article = new Article({

@@ -76,14 +76,19 @@ gulp.task('babel', function() {
     .pipe(gulp.dest(dist));
 });
 
-gulp.task('mocha', function() {
+gulp.task('mocha', function(done) {
   return gulp.src(testFiles, { read: false })
     .pipe(mocha());
+
+    done();
+    //.on('error', function() { process.exit(1); })
+    //.on('end', function() { process.exit(); });;
 });
 
 gulp.task('default', ['sass', 'babel', 'browserify']);
 
 gulp.task('test', ['babel'], function() {
+  process.env.NODE_ENV = 'testing';
   gulp.start('mocha');
 });
 

@@ -17,27 +17,31 @@ function getRandomModule() {
 }
 
 function generateArticles(opts={}, numArticles=50) {
-          // caption: content.caption,
-          // img_url: content.photo.crops.small_crop || undefined,
-          // module: module.name,
-          // section: content.taxonomy.section || undefined,
-          // subsection: content.taxonomy.subsection || undefined,
-          // source: site,
-          // summary: content.summary,
-          // title: content.headline,
-          // url: content.pageurl.shortUrl || undefined
-
   let articles = [];
   for (let i = 0; i < numArticles; i++) {
     articles.push({
-      caption: Chance.string(),
-      img_url: '',
+      brief: Chance.sentence(),
+      photo: {
+        caption: Chance.sentence(),
+        credit: `${Chance.first()} ${Chance.last()}`,
+        full: {
+          url: Chance.url(),
+          width: Chance.integer(),
+          height: Chance.integer()
+        },
+        thumbnail: {
+          url: Chance.url(),
+          width: Chance.integer(),
+          height: Chance.integer()
+        }
+      },
       module: getRandomModule(),
       section: Chance.string(),
       subsection: Chance.string(),
       source: getRandomSite(),
       summary: Chance.sentence(),
-      title: Chance.string(),
+      headline: Chance.string(),
+      subheadline: Chance.sentence(),
       url: Chance.url()
     });
   }
