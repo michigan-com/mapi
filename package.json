@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node --harmony ./dist/app.js"
+    "start": "node --harmony ./dist/server.js"
   },
   "dependencies": {
     "babel": "^5.2.17",
