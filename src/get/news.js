@@ -48,7 +48,7 @@ async function getNewsArticles(app) {
 
     logger.debug(`Processing ${site} data ...`);
     if (!('content' in data)) {
-      logger.debug(`Could not find content list in module ${module.name}, skipping ...`);
+      logger.debug(`Could not find content list for ${site}, skipping ...`);
       continue;
     }
 
