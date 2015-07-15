@@ -8,32 +8,35 @@ import { testDb } from '../../../config';
 import logger from '../../logger';
 
 describe('News fetching and saving', function() {
-  before(function(done) {
-    (async function() {
-      try {
-        await connect(testDb);
-      } catch (err) {
-        logger.error(err);
-      }
+  this.timeout(0);
+  before(async function(done) {
+    try {
+      await connect(testDb);
+    } catch (err) {
+      logger.error(err);
+      done(err);
+    }
 
-      getNewsArticles(app).catch(function(err) { logger.error(err); });
+    getNewsArticles(app).then(function() {
       done();
-    })();
+    }).catch(function(err) {
+      logger.error(err);
+      done(err);
+    });
   });
 
-  after(function(done) {
-    (async function() {
-      try {
-        await Article.remove().exec();
-        await disconnect();
-      } catch (err) {
-        logger.error(err);
-      }
-      done();
-    })();
+  after(async function(done) {
+    try {
+      await Article.remove().exec();
+    } catch (err) {
+      logger.error(err);
+      done(err);
+    }
+    await disconnect();
+    done();
   });
 
-  it('Fetches articles and verifies the return values', async function(done) {
+  it('Fetches articles and verifies the return values', function(done) {
     done();
   });
 });

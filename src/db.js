@@ -17,22 +17,22 @@ const defaults = {
 };
 
 function connect(dbString=db, options=defaults) {
-  logger.info(`[SERVER] Connecting to: ${dbString}`);
+  logger.info(`[DATABASE] Connecting to: ${dbString}`);
   return new Promise(function(resolve, reject) {
     mongoose.connect(dbString, options, function(err) {
       if (err) reject(err);
-      logger.info('[SERVER] Connected to mongodb!');
+      logger.info('[DATABASE] Connected to mongodb!');
       resolve(true);
     });
   });
 }
 
 function disconnect() {
-  logger.info('[SERVER] Disconnecting from mongodb ...');
+  logger.info('[DATABASE] Disconnecting from mongodb ...');
   return new Promise(function(resolve, reject) {
     mongoose.disconnect(function(err) {
       if (err) reject(err);
-      logger.info('[SERVER] Disconnected from mongodb!');
+      logger.info('[DATABASE] Disconnected from mongodb!');
       resolve(true);
     });
   });
