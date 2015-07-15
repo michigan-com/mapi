@@ -77,27 +77,9 @@ describe('API Routes', function() {
       testValidRoute('/v1/news/freep/sports/', { source: 'freep', section: 'sports' }, done);
     });
 
-    it('freep/sports/hero/ should return all articles for freep in sports section and hero module', function(done) {
-      testValidRoute('/v1/news/freep/sports/hero/', { source: 'freep', section: 'sports',  module: 'hero' }, done);
-    });
-
-    it('freep/sports/hero,headline-grid/  should return all articles for freep in sports section, hero and headline-grid modules', function(done) {
-      testValidRoute('/v1/news/freep/sports/hero,headline-grid', {
-        source: 'freep',
-        section: 'sports',
-        module: { $in: ['hero', 'headline-grid'] }
-      }, done);
-    });
-
     it('asdfasdf/ should return error response', function(done) {
       request(app)
         .get('/v1/news/asdfasdf/')
-        .expect(422, done);
-    });
-
-    it('freep/sports/asdfasdf/ should return an error response', function(done) {
-      request(app)
-        .get('/v1/news/freep/sports/asdasdfasdf/')
         .expect(422, done);
     });
   });

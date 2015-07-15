@@ -17,7 +17,7 @@ describe('News fetching and saving', function() {
       done(err);
     }
 
-    getNewsArticles(app).then(function() {
+    getNewsArticles(app).catch(function(err) { throw Error(err); }).then(function() {
       done();
     }).catch(function(err) {
       logger.error(err);
