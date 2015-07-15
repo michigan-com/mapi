@@ -50,6 +50,7 @@ app.use(log4js.connectLogger(logger));
 
 app.use('/', routes.index);
 app.use('/v1/', routes.v1);
+routes.socket.articles(app);
 
 app.use(function(err, req, res, next) {
   if (apiErrorCodes.indexOf(err.status) == -1) logger.error(err);

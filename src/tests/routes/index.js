@@ -1,19 +1,21 @@
+'use strict';
+
 import mongoose from 'mongoose';
 import request from 'supertest';
 import { assert } from 'chai';
 import mocha from 'mocha';
-import sinon from 'sinon';
+//import sinon from 'sinon';
 import indexBy from 'lodash/collection/indexBy';
 
 import { Article } from '../../db';
-import news from '../../get/news';
+//import news from '../../get/news';
 import helpers from '../helpers';
 import logger from '../../logger';
 import app from '../../app';
 
-sinon.stub(news, 'init', async function() {
+/*sinon.stub(news, 'scheduleTask', async function() {
   return;
-});
+});*/
 
 function verifyArticles(res, articles) {
   /**
@@ -25,7 +27,7 @@ function verifyArticles(res, articles) {
    *  [res].body.articles
    */
   assert.property(res.body, 'articles', '\'Articles\' not found in response body');
-  assert.equal(articles.length, res.body.articles.length, 'Incorrect number of articles returned');;
+  assert.equal(articles.length, res.body.articles.length, 'Incorrect number of articles returned');
 
   if (!articles.length) return;
 
