@@ -3,10 +3,10 @@
 import logger from  '../logger';
 import getAsync from '../lib/promise';
 import { Article } from '../db';
-import { sites, modules } from '../lib/constant';
+import { sites, sections, modules } from '../lib/constant';
 import { stripHost } from '../lib/parse';
 
-var default_timeout = 20 * 60 * 1000;
+let default_timeout = 20 * 60 * 1000;
 
 /**
   * Initializes an infinite loop that will continue to download new news articles
@@ -46,12 +46,8 @@ function createSocketRoute(app) {
  */
 async function getNewsArticles(app) {
   let resp;
-  try {
-    resp = await Promise.all([for (site of sites) getAsync(`http://${site}/sports/json`)]);
-  } catch (err) {
-    logger.error(err);
-    throw new Error(err);
-  }
+  let urls = generateUrls(sites, sections);
+  resp = await Promise.all([for (url of urls) fetchSection(url)]);
 
   logger.info('Removing all articles from mongodb ...');
   try {
@@ -61,8 +57,9 @@ async function getNewsArticles(app) {
     throw new Error(err);
   }
 
-  var articles = [];
+  let articles = [];
   for (let i = 0; i < resp.length; i++) {
+    if (!resp[i]) continue;
     let site = stripHost(resp[i].response.request.host);
     let data = JSON.parse(resp[i].body);
 
@@ -98,6 +95,10 @@ async function getNewsArticles(app) {
           thumbnail_url = photo_attrs.publishurl + photo_attrs.smallbasename;
         } else if (typeof photo_attrs.thumbnailPath === 'string' ) {
           thumbnail_url = photo_attrs.publishurl + photo_attrs.thumbnailPath;
+        }
+
+        if (site === 'detnews' && content.taxonomy.section === 'life-home') {
+          content.taxonomy.section = 'life';
         }
 
         let article = new Article({
@@ -137,6 +138,49 @@ async function getNewsArticles(app) {
   }
   app.io.broadcast('new_articles', { articles });
   logger.info('Saved new batch of news articles!');
+}
+
+/**
+ * Fetch url (a section front for a news site) using the getAsync function.
+ * Returns a promise that never rejects
+ *
+ * @param {String} [url] URL to be fetched
+ * @return {Object} Promise that never rejects. Either resolves with response from
+ *    getAsync call or resolves with undefined
+ */
+function fetchSection(url) {
+  return new Promise(function(resolve, reject) {
+    try {
+      let resp = getAsync(url);
+      resolve(resp);
+    }
+    catch(e) {
+      logger.info(`Failed to fetch ${url}`);
+      resolve(undefined);
+    }
+  });
+}
+
+/**
+ * Given a list of sites and sections, construct the urls
+ *
+ * @param {Array} [sites] The array of site hosts
+ * @param {Array} [sections] The sections to fetch for each site
+ */
+function generateUrls(sites, sections) {
+  let returnUrls = [];
+  for (let i = 0; i < sites.length; i++) {
+    let site = sites[i];
+    for (let j = 0; j < sections.length; j++) {
+      let section = sections[j];
+      if (site.indexOf('detroitnews') != -1 && section === 'life') {
+        section += '-home'
+      }
+
+      returnUrls.push(`http://${site}/${section}/json`);
+    }
+  }
+  return returnUrls;
 }
 
 module.exports = {

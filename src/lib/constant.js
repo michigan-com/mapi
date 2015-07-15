@@ -8,6 +8,11 @@ module.exports = {
     'livingstondaily.com',
     'thetimesherald.com',
   ],
+  sections: [
+    'news',
+    'sports',
+    'life'
+  ],
   modules: [
     'hero',
     'headline-grid',

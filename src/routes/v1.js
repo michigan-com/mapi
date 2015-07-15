@@ -7,7 +7,7 @@ import { Article } from '../db';
 import logger from  '../logger';
 import getAsync from '../lib/promise';
 import { stripHost } from '../lib/parse';
-import { sites, modules } from '../lib/constant';
+import { sites, sections, modules } from '../lib/constant';
 
 var router = Router();
 
@@ -27,9 +27,9 @@ router.get('/news/:site/:section/:moduleName/', news);
 async function news(req, res, next) {
   let siteNames = [for (site of sites) if (site) stripHost(site)];
 
-  let requestedSites = 'site' in req.params ? req.params.site.split(',') : siteNames;
-  // let section = req.params.section || 'all';
-  let moduleNames = 'moduleName' in req.params ? req.params.moduleName.split(',') : modules;
+  let requestedSites = 'site' in req.params ? req.params.site.split(',') : [];
+  let requestedSections = 'section' in req.params ? req.params.section.split(',') : [];
+  let moduleNames = 'moduleName' in req.params ? req.params.moduleName.split(',') : [];
   let mongoFilter = {};
 
   // Parse the sites params
@@ -48,7 +48,25 @@ async function news(req, res, next) {
     return next(err);
   }
 
-  mongoFilter.source = { $in: requestedSites };
+  if (requestedSites.length) mongoFilter.source = { $in: requestedSites };
+
+  // Parse the section params
+  let invalidSections = [];
+  _each(requestedSections, (section) => {
+    if (sections.indexOf(section) == -1) {
+      invalidSections.push(section);
+    }
+  });
+
+  if (invalidSections.length) {
+    // unprocessable, throw correct response code
+    let sections = invalidSections.join(', ');
+    var err = new Error(`Invalid query argument, section '${sections}' not allowed`);
+    err.status = 422;
+    return next(err);
+  }
+
+  if (requestedSections.length) mongoFilter.section = { $in: requestedSections };
 
   // Parse the moduleName param
   let invalidModules = [];
@@ -66,7 +84,7 @@ async function news(req, res, next) {
     return next(err);
   }
 
-  mongoFilter.module = { $in: moduleNames };
+  if (moduleNames.length) mongoFilter.module = { $in: moduleNames };
 
   let news;
   try {
@@ -78,5 +96,7 @@ async function news(req, res, next) {
 
   res.json({ articles: news });
 }
+
+function checkFilter()
 
 module.exports = router;
