@@ -79,6 +79,7 @@ async function getNewsArticles(app) {
         logger.debug(`Could not find contents list in module ${module.name}, skipping ...`);
         continue;
       }
+
       for (let i = 0; i < module.contents.length; i++) {
         let content = module.contents[i];
         if (!content.photo || !content.photo.attrs) {
@@ -86,6 +87,10 @@ async function getNewsArticles(app) {
           continue;
         }
         let photo_attrs = content.photo.attrs;
+        if (typeof photo_attrs.publishurl !== 'string') {
+          logger.debug(`Publish URL not found: ${content.headline}, skipping ...`);
+          continue;
+        }
         let photo_url = photo_attrs.publishurl + photo_attrs.basename;
 
         let thumbnail_url = null;
