@@ -77,12 +77,8 @@ gulp.task('babel', function() {
 });
 
 gulp.task('mocha', function(done) {
-  return gulp.src(testFiles, { read: false })
+  return gulp.src(testFiles, { read: false, reporter: 'nyan' })
     .pipe(mocha());
-
-    done();
-    //.on('error', function() { process.exit(1); })
-    //.on('end', function() { process.exit(); });;
 });
 
 gulp.task('default', ['sass', 'babel', 'browserify']);

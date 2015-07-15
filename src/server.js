@@ -16,7 +16,7 @@ var server = app.listen(port, '0.0.0.0', function(err) {
   let host = this.address();
   logger.info(`[SERVER] Started on ${host.address}:${host.port}`);
 
-  news.init(app);
+  news.scheduleTask(app);
 });
 
 server.on('close', function() {

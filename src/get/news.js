@@ -6,6 +6,7 @@ import { Article } from '../db';
 import { sites, sections, modules } from '../lib/constant';
 import { stripHost } from '../lib/parse';
 
+// 20 minutes
 let default_timeout = 20 * 60 * 1000;
 
 /**
@@ -15,27 +16,9 @@ let default_timeout = 20 * 60 * 1000;
   * @param {Object} [app] The express app instance
   * @param {Number} [timeout] Time between downloading new articles in milliseconds
   */
-function init(app, timeout=default_timeout) {
+function scheduleTask(app, timeout=default_timeout) {
   getNewsArticles(app).catch(function(err) { logger.error(err); });
-  createSocketRoute(app);
-  setTimeout(function() { getNewsArticles(app) }, timeout);
-}
-
-/**
-  * Creates a socket route that clients can `emit` to get news articles
-  *
-  * @param {Object} [app] The express app instance
-  */
-function createSocketRoute(app) {
-  app.io.route('get_articles', async function(req) {
-    let articles;
-    try {
-      articles = await Article.find(req.data).exec();
-    } catch (err) {
-      logger.error(err);
-    }
-    req.io.emit('got_articles', { articles, filters: req.data });
-  });
+  setTimeout(function() { init(app, timeout) }, timeout);
 }
 
 /**
@@ -184,7 +167,6 @@ function generateUrls(sites, sections) {
 }
 
 module.exports = {
-  init,
-  getNewsArticles,
-  createSocketRoute
+  scheduleTask,
+  getNewsArticles
 };

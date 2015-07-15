@@ -1,19 +1,21 @@
+'use strict';
+
 import mongoose from 'mongoose';
 import request from 'supertest';
 import { assert } from 'chai';
 import mocha from 'mocha';
-import sinon from 'sinon';
+//import sinon from 'sinon';
 import indexBy from 'lodash/collection/indexBy';
 
 import { Article } from '../../db';
-import news from '../../get/news';
+//import news from '../../get/news';
 import helpers from '../helpers';
 import logger from '../../logger';
 import app from '../../app';
 
-sinon.stub(news, 'init', async function() {
+/*sinon.stub(news, 'scheduleTask', async function() {
   return;
-});
+});*/
 
 function verifyArticles(res, articles) {
   /**
@@ -25,7 +27,7 @@ function verifyArticles(res, articles) {
    *  [res].body.articles
    */
   assert.property(res.body, 'articles', '\'Articles\' not found in response body');
-  assert.equal(articles.length, res.body.articles.length, 'Incorrect number of articles returned');;
+  assert.equal(articles.length, res.body.articles.length, 'Incorrect number of articles returned');
 
   if (!articles.length) return;
 
@@ -50,9 +52,10 @@ function verifyArticles(res, articles) {
   }
 }
 
-function testValidRoute(route, articlesFilter={}, done) {
+function testValidRoute(route, articlesFilter, done) {
   request(app)
     .get(route)
+    .expect(200)
     .expect('Content-Type', /json/)
     .end(async function(err, res) {
       if (err) throw done(err);
@@ -64,7 +67,7 @@ function testValidRoute(route, articlesFilter={}, done) {
     });
 }
 
-describe('Routes tests', function() {
+describe('API Routes', function() {
   before(async function(done) {
     logger.info('Removing all articles from mongodb ...');
     try {
@@ -94,50 +97,44 @@ describe('Routes tests', function() {
     mongoose.disconnect();
   });
 
-  it('Tests basic /v1/news/ route, no filters', function(done) {
-    testValidRoute('/v1/news/', {}, done);
-  });
+  describe('/v1/news/', function() {
+    it('should return all articles', function(done) {
+      testValidRoute('/v1/news/', {}, done);
+    });
 
-  it('Tests basic site filter: /v1/news/freep/', function(done) {
-    testValidRoute('/v1/news/freep/', { source: 'freep' }, done);
-  });
+    it('freep/ with should return all articles for freep', function(done) {
+      testValidRoute('/v1/news/freep/', { source: 'freep' }, done);
+    });
 
-  it('Tests more complex site filter: /v1/news/freep,detroitnews/', function(done) {
-    testValidRoute('/v1/news/freep,detroitnews/', {
-      source: { $in: ['freep', 'detroitnews'] }
-    }, done);
-  });
+    it('freep,detroitnews/ should return all articles for freep and detroitnews', function(done) {
+      testValidRoute('/v1/news/freep,detroitnews/', { source: { $in: ['freep', 'detroitnews'] } }, done);
+    });
 
-  it('Tests a basic module filter: /v1/news/freep/sports/hero/', function(done) {
-    testValidRoute('/v1/news/freep/sports/hero/', {
-      source: 'freep',
-      module: 'hero'
-    }, done);
-  });
+    it('freep/sports/ should return all articles for freep in sports section', function(done) {
+      testValidRoute('/v1/news/freep/sports/', { source: 'freep' }, done);
+    });
 
-  it('Tests a complex moudule filter: /v1/news/freep/sports/hero,headline-grid/', function(done) {
-    testValidRoute('/v1/news/freep/sports/hero,headline-grid/', {
-      source: 'freep',
-      module: { $in: ['hero', 'headline-grid'] }
-    }, done);
-  });
+    it('freep/sports/hero/ should return all articles for freep in sports section and hero module', function(done) {
+      testValidRoute('/v1/news/freep/sports/hero/', { source: 'freep', module: 'hero' }, done);
+    });
 
-  it('Tests a complex site and module filter: /v1/news/freep,detroitnews/sports/hero,headline-grid/', function(done) {
-    testValidRoute('/v1/news/freep,detroitnews/sports/hero,headline-grid/', {
-      source: { $in: ['freep', 'detroitnews'] },
-      module: { $in: ['hero', 'headline-grid'] }
-    }, done);
-  });
+    it('freep/sports/hero,headline-grid/  should return all articles for freep in sports section, hero and headline-grid modules', function(done) {
+      testValidRoute('/v1/news/freep/sports/hero,headline-grid', {
+        source: 'freep',
+        module: { $in: ['hero', 'headline-grid'] }
+      }, done);
+    });
 
-  it('Tests invalid site filters', function(done) {
-    request(app)
-      .get('/v1/news/asdfasdf/')
-      .expect(422, done);
-  });
+    it('asdfasdf/ should return error response', function(done) {
+      request(app)
+        .get('/v1/news/asdfasdf/')
+        .expect(422, done);
+    });
 
-  it('Tests invalid module filter', function(done) {
-    request(app)
-      .get('/v1/news/freep/sports/asdasdfasdf/')
-      .expect(422, done);
+    it('freep/sports/asdfasdf/ should return an error response', function(done) {
+      request(app)
+        .get('/v1/news/freep/sports/asdasdfasdf/')
+        .expect(422, done);
+    });
   });
 });
