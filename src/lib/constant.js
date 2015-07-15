@@ -9,6 +9,7 @@ module.exports = {
     'thetimesherald.com',
   ],
   sections: [
+    'home',
     'news',
     'sports',
     'life'
