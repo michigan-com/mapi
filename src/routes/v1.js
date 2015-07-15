@@ -11,14 +11,6 @@ import { sites, sections, modules } from '../lib/constant';
 
 var router = Router();
 
-router.get('/', function(req, res, next) {
-  res.render('index');
-});
-
-router.get('/test_socket/', function(req, res, next) {
-  res.render('test_socket');
-});
-
 router.get('/news/', news);
 router.get('/news/:site/', news);
 router.get('/news/:site/:section/', news);
@@ -97,6 +89,5 @@ async function news(req, res, next) {
   res.json({ articles: news });
 }
 
-function checkFilter()
-
 module.exports = router;
+

@@ -5,6 +5,11 @@ import mongoose from 'mongoose';
 import app from './app';
 import logger from './logger';
 import news from './get/news';
+import { connect, disconnect } from './db';
+import { db } from '../config';
+
+connect(process.env.MAPI_DB || db);
+mongoose.connection.on('error', logger.error);
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
@@ -20,12 +25,11 @@ var server = app.listen(port, '0.0.0.0', function(err) {
 });
 
 server.on('close', function() {
-  logger.info("[SERVER] Closed nodejs application, disconnecting mongodb ...");
-  mongoose.disconnect();
+  logger.info("[SERVER] Closed nodejs application ...");
+  disconnect();
 });
 
 process.on('SIGTERM', function () {
-  logger.info("[SERVER] Closing nodejs application ...");
   server.close();
 });
 

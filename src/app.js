@@ -3,7 +3,6 @@
 import path from 'path';
 
 import log4js from 'log4js';
-import mongoose from 'mongoose';
 import express from 'express.io';
 import favicon from 'serve-favicon';
 import bodyParser from 'body-parser';
@@ -11,32 +10,18 @@ import cookieParser from 'cookie-parser';
 
 import mail from './mail';
 import logger from './logger';
-import { connect } from './db';
 import routes from './routes/index';
-import { log_level, db, testDb } from '../config';
-
-if (typeof db === 'undefined') {
-  throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
-}
+import { log_level } from '../config';
 
 var app = express();
 app.http().io();
 
 var app_env = app.get('env');
 var BASE_DIR = path.dirname(__dirname);
-var _db = db;
-var apiErrorCodes = [422];
 
 if (app_env === 'production') {
   logger.setLevel('INFO');
 }
-
-if (app_env === 'testing') {
-  _db = testDb || 'mongodb://localhost:27017/mapi-test';
-}
-
-connect(_db);
-mongoose.connection.on('error', logger.error);
 
 app.set('views', path.join(BASE_DIR, 'views'));
 app.set('view engine', 'jade');
