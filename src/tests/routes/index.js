@@ -24,7 +24,8 @@ describe('API Routes', function() {
     try {
       await connect(testDb);
     } catch (err) {
-      throw new Error(err);
+      logger.error(err);
+      done(err);
     }
 
     logger.info('Removing all articles from mongodb ...');
@@ -32,6 +33,7 @@ describe('API Routes', function() {
       await Article.remove().exec();
     } catch (err) {
       logger.error(err);
+      done(err);
     }
 
     let articles = helpers.generateArticles();
@@ -44,6 +46,7 @@ describe('API Routes', function() {
         await article.save()
       } catch(err) {
         logger.error(err);
+        done(err);
       }
     }
 
