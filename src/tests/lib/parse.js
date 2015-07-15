@@ -2,33 +2,26 @@ import parse from '../../lib/parse';
 import { assert } from 'chai';
 import mocha from 'mocha';
 
-describe('Parse Tests', function() {
+describe('stripHost', function() {
+  it('should return freep', function() {
+    var expected = 'freep';
+    assert.equal(parse.stripHost('freep.com'), expected);
+    assert.equal(parse.stripHost('http://freep.com'), expected);
+    assert.equal(parse.stripHost('http://www.freep.com'), expected);
+    assert.equal(parse.stripHost('www.freep.com'), expected);
+  });
 
-  it('Test the host parsing', function() {
-    let testCases = [
-      // Basic test
-      { testValue: 'freep.com', result: 'freep' },
-      { testValue: 'http://freep.com', result: 'freep' },
-      { testValue: 'http://www.freep.com', result: 'freep' },
-      { testValue: 'www.freep.com', result: 'freep' },
+  it('should should return test.freep', function() {
+    assert.equal(parse.stripHost('http://www.test.freep.com'), 'test.freep');
+  });
 
-      // More complex
-      { testValue: 'http://www.test.freep.com', result: 'test.freep' },
-      { testValue: 'http://asdfasdf', result: 'asdfasdf' },
-      { testValue: 'this.that.somedomain', result: 'this.that' },
-      { testValue: 'somekinda.comlextest', result: 'somekinda' },
+  it('should return asdfasdf', function() {
+    assert.equal(parse.stripHost('http://asdfasdf'), 'asdfasdf');
+  });
 
-      // Invalid values
-      { testValue: [], result: '' },
-      { testValue: {}, result: '' },
-      { testValue: 123123, result: '' }
-    ];
-
-    for (let i = 0; i < testCases.length; i++) {
-      let testCase = testCases[i];
-
-      let result = parse.stripHost(testCase.testValue);
-      assert.equal(result, testCase.result);
-    }
+  it('should return empty string', function() {
+    assert.equal(parse.stripHost([]), '');
+    assert.equal(parse.stripHost({}), '');
+    assert.equal(parse.stripHost(123123), '');
   });
 });
