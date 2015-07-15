@@ -16,7 +16,7 @@ var default_timeout = 20 * 60 * 1000;
   * @param {Number} [timeout] Time between downloading new articles in milliseconds
   */
 function init(app, timeout=default_timeout) {
-  getNewsArticles(app);
+  getNewsArticles(app).catch(function(err) { logger.error(err); });
   createSocketRoute(app);
   setTimeout(function() { getNewsArticles(app) }, timeout);
 }
@@ -50,7 +50,7 @@ async function getNewsArticles(app) {
     resp = await Promise.all([for (site of sites) getAsync(`http://${site}/sports/json`)]);
   } catch (err) {
     logger.error(err);
-    return;
+    throw new Error(err);
   }
 
   logger.info('Removing all articles from mongodb ...');
@@ -58,6 +58,7 @@ async function getNewsArticles(app) {
     await Article.remove().exec();
   } catch (err) {
     logger.error(err);
+    throw new Error(err);
   }
 
   var articles = [];
@@ -65,10 +66,10 @@ async function getNewsArticles(app) {
     let site = stripHost(resp[i].response.request.host);
     let data = JSON.parse(resp[i].body);
 
+    logger.debug(`Processing ${site} data ...`);
     for (let i = 0; i < data.primary_modules.length; i++) {
       let module = data.primary_modules[i];
       module.name = module.name.replace(`${site}-`, '');
-
       if (modules.indexOf(module.name) == -1) {
         logger.debug(`Found '${module.name}' which is not in the list of modules we want, skipping ...`);
         continue;
@@ -78,15 +79,15 @@ async function getNewsArticles(app) {
         logger.debug(`Could not find contents list in module ${module.name}, skipping ...`);
         continue;
       }
-
       for (let i = 0; i < module.contents.length; i++) {
         let content = module.contents[i];
-        if (!content.hasOwnProperty('photo') || !content.photo.hasOwnProperty('attrs')) {
+        if (!content.photo || !content.photo.attrs) {
           logger.debug(`Could not find photo object in content object for ${content.headline}, skipping ...`);
           continue;
         }
         let photo_attrs = content.photo.attrs;
         let photo_url = photo_attrs.publishurl + photo_attrs.basename;
+
         let thumbnail_url = null;
         if (typeof photo_attrs.smallbasename === 'string') {
           thumbnail_url = photo_attrs.publishurl + photo_attrs.smallbasename;
@@ -118,6 +119,7 @@ async function getNewsArticles(app) {
           subheadline: content.attrs.brief || null,
           url: content.pageurl.shortUrl || null
         });
+
         articles.push(article);
 
         try {

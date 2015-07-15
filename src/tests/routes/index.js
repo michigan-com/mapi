@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import request from 'supertest';
 import { assert } from 'chai';
 import mocha from 'mocha';
@@ -90,7 +91,7 @@ describe('Routes tests', function() {
   });
 
   after(function() {
-    app.close();
+    mongoose.disconnect();
   });
 
   it('Tests basic /v1/news/ route, no filters', function(done) {
