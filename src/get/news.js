@@ -13,19 +13,19 @@ let default_timeout = 20 * 60 * 1000;
   * Initializes an infinite loop that will continue to download new news articles
   * which will repeat based on the timeout
   *
-  * @param {Object} [app] The express app instance
-  * @param {Number} [timeout] Time between downloading new articles in milliseconds
+  * @param {Object} app - The express app instance
+  * @param {Number} timeout - Time between downloading new articles in milliseconds
   */
 function scheduleTask(app, timeout=default_timeout) {
   getNewsArticles(app).catch(function(err) { logger.error(err); });
-  setTimeout(function() { init(app, timeout) }, timeout);
+  setTimeout(function() { scheduleTask(app, timeout) }, timeout);
 }
 
 /**
  * Downloads all news articles from our news sites, removes old articles,
  * parses, and then saves the data
  *
- * @param {Object} [app] The express app instance
+ * @param {Object} app - The express app instance
  */
 async function getNewsArticles(app) {
   let resp;
@@ -118,7 +118,7 @@ async function getNewsArticles(app) {
  * Fetch url (a section front for a news site) using the getAsync function.
  * Returns a promise that never rejects
  *
- * @param {String} [url] URL to be fetched
+ * @param {String} url - URL to be fetched
  * @return {Object} Promise that never rejects. Either resolves with response from
  *    getAsync call or resolves with undefined
  */
@@ -138,8 +138,8 @@ function fetchSection(url) {
 /**
  * Given a list of sites and sections, construct the urls
  *
- * @param {Array} [sites] The array of site hosts
- * @param {Array} [sections] The sections to fetch for each site
+ * @param {Array} sites - The array of site hosts
+ * @param {Array} sections - The sections to fetch for each site
  */
 function generateUrls(sites, sections) {
   let returnUrls = [];
