@@ -12,10 +12,93 @@ import { Article } from '../../db';
 import helpers from '../helpers';
 import logger from '../../logger';
 import app from '../../app';
+import { connect, disconnect } from '../../db';
+import { testDb } from '../../../config';
 
 /*sinon.stub(news, 'scheduleTask', async function() {
   return;
 });*/
+
+describe('API Routes', function() {
+  before(async function(done) {
+    try {
+      await connect(testDb);
+    } catch (err) {
+      throw new Error(err);
+    }
+
+    logger.info('Removing all articles from mongodb ...');
+    try {
+      await Article.remove().exec();
+    } catch (err) {
+      logger.error(err);
+    }
+
+    let articles = helpers.generateArticles();
+
+    for (let i = 0; i < articles.length; i++) {
+      let articleData = articles[i];
+      let article = new Article(articleData);
+
+      try {
+        await article.save()
+      } catch(err) {
+        logger.error(err);
+      }
+    }
+
+    logger.info('Saved new batch of news articles!');
+    done();
+  });
+
+  after(function(done) {
+    disconnect().then(function() {
+      done();
+    });
+  });
+
+  describe('/v1/news/', function() {
+    it('should return all articles', function(done) {
+      testValidRoute('/v1/news/', {}, done);
+    });
+
+    it('freep/ with should return all articles for freep', function(done) {
+      testValidRoute('/v1/news/freep/', { source: 'freep' }, done);
+    });
+
+    it('freep,detroitnews/ should return all articles for freep and detroitnews', function(done) {
+      testValidRoute('/v1/news/freep,detroitnews/', { source: { $in: ['freep', 'detroitnews'] } }, done);
+    });
+
+    it('freep/sports/ should return all articles for freep in sports section', function(done) {
+      testValidRoute('/v1/news/freep/sports/', { source: 'freep', section: 'sports' }, done);
+    });
+
+    it('freep/sports/hero/ should return all articles for freep in sports section and hero module', function(done) {
+      testValidRoute('/v1/news/freep/sports/hero/', { source: 'freep', section: 'sports',  module: 'hero' }, done);
+    });
+
+    it('freep/sports/hero,headline-grid/  should return all articles for freep in sports section, hero and headline-grid modules', function(done) {
+      testValidRoute('/v1/news/freep/sports/hero,headline-grid', {
+        source: 'freep',
+        section: 'sports',
+        module: { $in: ['hero', 'headline-grid'] }
+      }, done);
+    });
+
+    it('asdfasdf/ should return error response', function(done) {
+      request(app)
+        .get('/v1/news/asdfasdf/')
+        .expect(422, done);
+    });
+
+    it('freep/sports/asdfasdf/ should return an error response', function(done) {
+      request(app)
+        .get('/v1/news/freep/sports/asdasdfasdf/')
+        .expect(422, done);
+    });
+  });
+});
 
 function verifyArticles(res, articles) {
   /**
@@ -57,84 +140,13 @@ function testValidRoute(route, articlesFilter, done) {
     .get(route)
     .expect(200)
     .expect('Content-Type', /json/)
-    .end(async function(err, res) {
+    .end(function(err, res) {
       if (err) throw done(err);
 
-      let articles = await Article.find(articlesFilter).exec();
-      verifyArticles(res, articles);
-
-      done();
+      Article.find(articlesFilter).exec(function(err, articles) {
+        if (err) throw done(err);
+        verifyArticles(res, articles);
+        done();
+      });
     });
 }
-
-describe('API Routes', function() {
-  before(async function(done) {
-    logger.info('Removing all articles from mongodb ...');
-    try {
-      await Article.remove().exec();
-    } catch (err) {
-      logger.error(err);
-    }
-
-    let articles = helpers.generateArticles();
-
-    for (let i = 0; i < articles.length; i++) {
-      let articleData = articles[i];
-      let article = new Article(articleData);
-
-      try {
-        await article.save()
-      } catch(err) {
-        logger.error(err);
-      }
-    }
-
-    logger.info('Saved new batch of news articles!');
-    done();
-  });
-
-  after(function() {
-    mongoose.disconnect();
-  });
-
-  describe('/v1/news/', function() {
-    it('should return all articles', function(done) {
-      testValidRoute('/v1/news/', {}, done);
-    });
-
-    it('freep/ with should return all articles for freep', function(done) {
-      testValidRoute('/v1/news/freep/', { source: 'freep' }, done);
-    });
-
-    it('freep,detroitnews/ should return all articles for freep and detroitnews', function(done) {
-      testValidRoute('/v1/news/freep,detroitnews/', { source: { $in: ['freep', 'detroitnews'] } }, done);
-    });
-
-    it('freep/sports/ should return all articles for freep in sports section', function(done) {
-      testValidRoute('/v1/news/freep/sports/', { source: 'freep' }, done);
-    });
-
-    it('freep/sports/hero/ should return all articles for freep in sports section and hero module', function(done) {
-      testValidRoute('/v1/news/freep/sports/hero/', { source: 'freep', module: 'hero' }, done);
-    });
-
-    it('freep/sports/hero,headline-grid/  should return all articles for freep in sports section, hero and headline-grid modules', function(done) {
-      testValidRoute('/v1/news/freep/sports/hero,headline-grid', {
-        source: 'freep',
-        module: { $in: ['hero', 'headline-grid'] }
-      }, done);
-    });
-
-    it('asdfasdf/ should return error response', function(done) {
-      request(app)
-        .get('/v1/news/asdfasdf/')
-        .expect(422, done);
-    });
-
-    it('freep/sports/asdfasdf/ should return an error response', function(done) {
-      request(app)
-        .get('/v1/news/freep/sports/asdasdfasdf/')
-        .expect(422, done);
-    });
-  });
-});

@@ -8,8 +8,13 @@ import news from './get/news';
 import { connect, disconnect } from './db';
 import { db } from '../config';
 
-connect(process.env.MAPI_DB || db);
 mongoose.connection.on('error', logger.error);
+
+connect(process.env.MAPI_DB || db).then(function() {
+  news.scheduleTask(app);
+}).catch(function(err) {
+  throw new Error(err);
+});
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
@@ -20,8 +25,6 @@ var server = app.listen(port, '0.0.0.0', function(err) {
 
   let host = this.address();
   logger.info(`[SERVER] Started on ${host.address}:${host.port}`);
-
-  news.scheduleTask(app);
 });
 
 server.on('close', function() {

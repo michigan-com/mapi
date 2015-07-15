@@ -6,24 +6,20 @@ import { connect, disconnect } from '../../db';
 import { testDb } from '../../../config';
 import logger from '../../logger';
 
-// test data
-// import { battlecreekenquirer, detroitnews, freep, hometownlife, lansingstatejournal, livingstonedaily, thetimesherald } from '../data/index';
-
 describe('News fetching', function() {
-  before(function() {
-    logger.info(`conneting to ${testDb}`)
-    connect(testDb);
+  before(function(done) {
+    connect(testDb).then(function() {
+      done();
+    });
   });
 
-  after(function() {
-    disconnect();
+  after(function(done) {
+    disconnect().then(function() {
+      done();
+    });
   });
 
   it('Fetches articles and verifies the return values', async function(done) {
-    // this.timeout(10000);
-    // let articles = await getNewsArticles();
-
-    // logger.debug(articles);
     done();
   });
 });

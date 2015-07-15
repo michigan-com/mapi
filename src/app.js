@@ -18,6 +18,7 @@ app.http().io();
 
 var app_env = app.get('env');
 var BASE_DIR = path.dirname(__dirname);
+var apiErrorCodes = [422];
 
 if (app_env === 'production') {
   logger.setLevel('INFO');
