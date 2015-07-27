@@ -9,6 +9,7 @@ import logger from '../../logger';
 
 describe('News fetching and saving', function() {
   this.timeout(0);
+
   before(async function(done) {
     try {
       await connect(testDb);
@@ -17,12 +18,14 @@ describe('News fetching and saving', function() {
       done(err);
     }
 
-    getNewsArticles(app).catch(function(err) { throw Error(err); }).then(function() {
-      done();
-    }).catch(function(err) {
+    try {
+      await getNewsArticles(app);
+    } catch (err) {
       logger.error(err);
       done(err);
-    });
+    }
+
+    done();
   });
 
   after(async function(done) {
@@ -32,11 +35,27 @@ describe('News fetching and saving', function() {
       logger.error(err);
       done(err);
     }
+
     await disconnect();
     done();
   });
 
-  it('Fetches articles and verifies the return values', function(done) {
+  /*it('Fetches articles and verifies the return values', function(done) {
     done();
+  });*/
+
+  it('Should not store duplicate articles', function(done) {
+    Article.find(function(err, articles) {
+      if (err) done(err);
+
+      let result = new Set();
+      for (let i = 0; i < articles.length; i++) {
+        let article = articles[i];
+        assert.equal(result.has(article.headline), false);
+        result.add(article.headline);
+      }
+
+      done();
+    });
   });
 });

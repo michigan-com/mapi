@@ -76,6 +76,12 @@ async function getNewsArticles(app) {
         content.attrs.section = 'life';
       }
 
+      let duplicate = await Article.findOne({ headline: content.headline }).exec();
+      if (duplicate) {
+        logger.debug(`Article ${content.headline} already found in database, skipping ...`);
+        continue;
+      }
+
       let article = new Article({
         photo: {
           caption: photo_attrs.caption || null,
