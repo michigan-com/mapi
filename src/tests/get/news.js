@@ -58,4 +58,13 @@ describe('News fetching and saving', function() {
       done();
     });
   });
+
+  it('Should not store an empty timestamp', function(done) {
+    Article.find({ timestamp: new Date('0001-01-01T00:00:00.0000000') }, function(err, articles) {
+      if (err) done(err);
+
+      assert.equal(articles.length, 0);
+      done();
+    });
+  });
 });
