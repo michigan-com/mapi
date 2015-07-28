@@ -1,5 +1,56 @@
 extends layout
 
+block title
+  title API Explorer
+
+block js
+  script(src='js/dist/explore.js')
+
 block content
-  div.
-    Hi there
+  .page-header
+    h1 Michigan API Explorer
+
+  h2 Version 1
+  hr
+
+  article.api-endpoint
+    h3 News Endpoint
+    p.
+      Grabs the latest news articles from any or all news sources
+    div
+      strong Request
+      .row
+        pre.col-left.api-request.
+          GET /v1/news/:site/:section/
+        .col-right.
+          This is the right column
+
+      br
+
+      strong Options
+      .row
+        .col-left.api-options
+          div
+            label Site
+            input(id='site_news', type='text')
+          div
+            label Section
+            input(id='section_news', type='text')
+          div
+            button(id='btn_news', data-url='/v1/news/') Execute
+        .col-right.
+          This is the right column
+
+      br
+
+      strong Response
+      .row
+        pre.api-response.col-left.
+          Status: 200 OK
+          {
+            "success": true
+          }
+        .col-right.
+          This is the right column
+
+

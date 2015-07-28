@@ -110,7 +110,6 @@ async function getNewsArticles(app) {
             height: photo_attrs.simageheight || null
           }
         },
-        module: null, // TODO fix maybe?
         section: content.ssts.section || null,
         subsection: content.ssts.subsection || null,
         source: site,
