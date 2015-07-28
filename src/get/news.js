@@ -17,7 +17,9 @@ let default_timeout = 20 * 60 * 1000;
   * @param {Number} timeout - Time between downloading new articles in milliseconds
   */
 function scheduleTask(app, timeout=default_timeout) {
-  getNewsArticles(app).catch(function(err) { logger.error(err); });
+  getNewsArticles(app).catch(function(err) {
+    logger.error(err);
+  });
   setTimeout(function() { scheduleTask(app, timeout) }, timeout);
 }
 
@@ -82,6 +84,17 @@ async function getNewsArticles(app) {
         continue;
       }
 
+      let timestamp = content.timestamp;
+      if (timestamp == '0001-01-01T00:00:00.0000000' || timestamp == null) {
+        if (i == 0) {
+          timestamp = new Date(data.content[i + 1].timestamp);
+        } else {
+          timestamp = new Date(data.content[i - 1].timestamp);
+        }
+      } else {
+        timestamp = new Date(timestamp);
+      }
+
       let article = new Article({
         photo: {
           caption: photo_attrs.caption || null,
@@ -104,7 +117,8 @@ async function getNewsArticles(app) {
         summary: content.summary,
         headline: content.headline,
         subheadline: content.attrs.brief || null,
-        url: `http://${site}.com${content.url}` || null
+        url: `http://${site}.com${content.url}` || null,
+        timestamp: timestamp
       });
 
       articles.push(article);

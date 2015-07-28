@@ -61,7 +61,8 @@ var ArticleSchema = new Schema({
   headline: { type: String },
   subheadline: { type: String, default: null },
   created_at: { type: Date, default: Date.now },
-  url: { type: String }
+  url: { type: String },
+  timestamp: { type: Date, default: null }
 });
 
 module.exports = {
