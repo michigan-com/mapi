@@ -53,7 +53,6 @@ var ArticleSchema = new Schema({
       height: { type: Number, default: null }
     }
   },
-  module: { type: String },
   section: { type: String },
   subsection: { type: String },
   source: { type: String, trim: true },

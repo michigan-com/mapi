@@ -21,7 +21,7 @@ var browserifyShim = require('browserify-shim');
 var config = require('./config');
 
 var jsSrc = './public/js/src/';
-var jsBundle = ['test_socket.js'];
+var jsBundle = ['explore.js', 'test_socket.js'];
 
 var testFiles = './dist/tests/**/*.js';
 
