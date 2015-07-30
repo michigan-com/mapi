@@ -1,0 +1,27 @@
+.api-endpoint {
+  background-color: #F5F5F5;
+  padding: 2px 10px;
+  margin: 15px 0;
+  h3, h4 {
+    margin: 0;
+  }
+}
+.api-request {
+  margin: 1px;
+  cursor: pointer;
+}
+.api-body {
+  display: none;
+  div {
+    margin: 10px 0;
+  }
+}
+.api-info {}
+.api-options {}
+.api-response {
+  display: none;
+  background-color: #fff;
+  max-height: 500px;
+  overflow: scroll;
+}
+

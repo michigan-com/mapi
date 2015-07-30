@@ -4,53 +4,51 @@ block title
   title API Explorer
 
 block js
-  script(src='js/dist/explore.js')
+  script(src='js/dist/api.js')
+
+block css
+  link(href='css/api.css', rel='stylesheet')
 
 block content
   .page-header
     h1 Michigan API Explorer
 
-  h2 Version 1
+  h2#v1 Version 1
   hr
 
-  article.api-endpoint
-    h3 News Endpoint
-    p.
-      Grabs the latest news articles from any or all news sources
-    div
-      strong Request
+  article#v1_news.api-endpoint
+    div.api-request
+      h3 GET /v1/news/
+    div.api-body
+      p.api-info.
+        Grabs the latest news articles from all news sources
+
+      div
+        button(data-url='/v1/news/', class='btn animate green') Execute
+
       .row
-        pre.col-left.api-request.
-          GET /v1/news/:site/:section/
-        .col-right.
-          This is the right column
+        h4 Response
+        pre.api-response
 
-      br
+  article#v1_news_site.api-endpoint
+    div.api-request
+      h3 GET /v1/news/:site/
+    div.api-body
+      p.api-info.
+        Grabs the latest news articles from a list of news sites
 
-      strong Options
+      .row.api-options
+        .col-left
+          h4 Options
+          label Site
+          input(type='text', name='site', class='api-input', value='freep,detroitnews')
+        .col-right
+          p Site option, choose from one or many news sites
+
+      div
+        button(data-url='/v1/news/', class='btn animate green') Execute
+
       .row
-        .col-left.api-options
-          div
-            label Site
-            input(id='site_news', type='text')
-          div
-            label Section
-            input(id='section_news', type='text')
-          div
-            button(id='btn_news', data-url='/v1/news/') Execute
-        .col-right.
-          This is the right column
-
-      br
-
-      strong Response
-      .row
-        pre.api-response.col-left.
-          Status: 200 OK
-          {
-            "success": true
-          }
-        .col-right.
-          This is the right column
-
+        h4 Response
+        pre.api-response
 
