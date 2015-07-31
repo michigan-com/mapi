@@ -40,9 +40,34 @@ describe('News fetching and saving', function() {
     done();
   });
 
-  /*it('Fetches articles and verifies the return values', function(done) {
-    done();
-  });*/
+  it('should only contain articles with specific non-empty keys', function(done) {
+    Article.find(function(err, articles) {
+      if (err) done(err);
+
+      for (let i = 0; i < articles.length; i++) {
+        let article = articles[i];
+        assert.notTypeOf(article.id, 'null', 'id should not be null');
+        assert.notTypeOf(article.id, 'undefined', 'id should not be undefined');
+
+        assert.notTypeOf(article.url, 'null', 'url should not be null');
+        assert.notTypeOf(article.url, 'undefined', 'url should not be undefined');
+
+        assert.notTypeOf(article.headline, 'null', 'headline should not be null');
+        assert.notTypeOf(article.headline, 'undefined', 'headline should not be undefined');
+
+        assert.notTypeOf(article.photo.full.url, 'null', 'photo should not be null');
+        assert.notTypeOf(article.photo.full.url, 'undefined', 'photo should not be undefined');
+
+        assert.notTypeOf(article.timestamp, 'null', 'timestamp should not be null');
+        assert.notTypeOf(article.timestamp, 'undefined', 'timestamp should not be undefined');
+
+        assert.notTypeOf(article.source, 'null', 'source should not be null');
+        assert.notTypeOf(article.source, 'undefined', 'source should not be undefined');
+      }
+
+      done();
+    });
+  });
 
   it('Should not store duplicate articles', function(done) {
     Article.find(function(err, articles) {
@@ -51,8 +76,8 @@ describe('News fetching and saving', function() {
       let result = new Set();
       for (let i = 0; i < articles.length; i++) {
         let article = articles[i];
-        assert.equal(result.has(article.headline), false);
-        result.add(article.headline);
+        assert.equal(result.has(article.url), false);
+        result.add(article.url);
       }
 
       done();

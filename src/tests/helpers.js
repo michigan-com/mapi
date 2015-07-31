@@ -20,6 +20,7 @@ function generateArticles(opts={}, numArticles=50) {
   let articles = [];
   for (let i = 0; i < numArticles; i++) {
     articles.push({
+      article_id: Chance.integer(),
       brief: Chance.sentence(),
       photo: {
         caption: Chance.sentence(),

@@ -25,7 +25,7 @@ async function news(req, res, next) {
   // Parse the sites params
   let invalidSites = [];
   _each(requestedSites, (site) => {
-    if (siteNames.indexOf(site) == -1) {
+    if (siteNames.indexOf(site) == -1 && site != 'all') {
       invalidSites.push(site)
     }
   });
@@ -38,7 +38,9 @@ async function news(req, res, next) {
     return next(err);
   }
 
-  if (requestedSites.length) mongoFilter.source = { $in: requestedSites };
+  if (requestedSites.length && requestedSites.indexOf('all') == -1) {
+    mongoFilter.source = { $in: requestedSites };
+  }
 
   // Parse the section params
   let invalidSections = [];

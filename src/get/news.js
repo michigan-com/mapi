@@ -78,9 +78,11 @@ async function getNewsArticles(app) {
         content.attrs.section = 'life';
       }
 
-      let duplicate = await Article.findOne({ headline: content.headline }).exec();
+      let content_url = `http://${site}.com${content.url}`;
+
+      let duplicate = await Article.findOne({ url: content_url }).exec();
       if (duplicate) {
-        logger.debug(`Article ${content.headline} already found in database, skipping ...`);
+        logger.debug(`Article ${content.headline} already found in ${site}, skipping ...`);
         continue;
       }
 
@@ -110,13 +112,14 @@ async function getNewsArticles(app) {
             height: photo_attrs.simageheight || null
           }
         },
+        article_id: content.id,
         section: content.ssts.section || null,
         subsection: content.ssts.subsection || null,
         source: site,
         summary: content.summary,
         headline: content.headline,
         subheadline: content.attrs.brief || null,
-        url: `http://${site}.com${content.url}` || null,
+        url: content_url,
         timestamp: timestamp
       });
 
