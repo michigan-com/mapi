@@ -18,15 +18,15 @@ function get(url) {
   });
 }
 
-function find(className, startElem=document, how_many=0) {
+function find(className, startElem=document, only_one=false) {
   let elems = startElem.getElementsByTagName('*');
   let hasClassName = [];
   for (let i = 0; i < elems.length; i++) {
     if (hasClass(className, elems[i])) {
-      hasClassName.push(elems[i]);
-      if (how_many > 0 && hasClassName.length == how_many) {
-        return hasClassName;
+      if (only_one) {
+        return elems[i];
       }
+      hasClassName.push(elems[i]);
     }
   }
   return hasClassName;
@@ -35,13 +35,6 @@ function find(className, startElem=document, how_many=0) {
 function hasClass(className, elem) {
   var classes = ' ' + elem.className + ' ';
   return classes.indexOf(' ' + className + ' ') > -1;
-}
-
-function findOne(className, startElem=document) {
-  var elems = find(className, startElem, 1);
-  if (elems.length > 0) {
-    return elems[0];
-  }
 }
 
 function getOptions(opt_els) {
@@ -60,7 +53,7 @@ function getOptions(opt_els) {
   return options;
 }
 
-function parents(className, startElem=document, only_one=true) {
+function parents(className, startElem=document, only_one=false) {
   var parent = startElem.parentNode;
   var elems = [];
   while (parent) {
@@ -79,6 +72,11 @@ var urlFn = {
   v1_news_site: function(url, options) {
     if (options.site) url += options.site + '/';
     return url;
+  },
+  v1_news_site_section: function(url, options) {
+    if (options.site) url += options.site + '/';
+    if (options.section) url += options.section + '/';
+    return url;
   }
 };
 
@@ -86,7 +84,7 @@ var request_els = find('api-request');
 for (let i = 0; i < request_els.length; i++) {
   let req = request_els[i];
   req.addEventListener('click', function(ev) {
-    let body = findOne('api-body', this.parentNode);
+    let body = find('api-body', this.parentNode, true);
     if (body.style.display == "none" || !body.style.display) {
       body.style.display = "block";
     } else {
@@ -100,18 +98,18 @@ for (let i = 0; i < buttons.length; i++) {
   let button = buttons[i];
   button.addEventListener('click', function(ev) {
     let url = this.getAttribute('data-url');
-    let body_el = parents('api-body', this);
+    let body_el = parents('api-body', this, true);
     let options = find('api-input', body_el);
     options = getOptions(options);
 
-    let endpoint_el = parents('api-endpoint', this);
+    let endpoint_el = parents('api-endpoint', this, true);
     let endpoint_id = endpoint_el.getAttribute('id');
     if (endpoint_id in urlFn) {
       url = urlFn[endpoint_id](url, options);
     }
 
     get(url).then(response => {
-      let api_resp = findOne('api-response', body_el);
+      let api_resp = find('api-response', body_el, true);
       api_resp.style.display = 'block';
 
       api_resp.innerHTML = `Request URL: ${response.responseURL}\n`;
@@ -119,7 +117,13 @@ for (let i = 0; i < buttons.length; i++) {
       let json = JSON.parse(response.responseText);
       api_resp.innerHTML += JSON.stringify(json, null, 2);
     }).catch(function(response) {
-      throw new Error(response.status);
+      let api_resp = find('api-response', body_el, true);
+      api_resp.style.display = 'block';
+
+      api_resp.innerHTML = `Request URL: ${response.responseURL}\n`;
+      api_resp.innerHTML += `Status: ${response.status} ${response.statusText}\n`;
+      let json = JSON.parse(response.responseText);
+      api_resp.innerHTML += JSON.stringify(json, null, 2);
     });
   });
 }

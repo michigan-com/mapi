@@ -24,6 +24,7 @@ block content
         Grabs the latest news articles from all news sources
 
       div
+        hr
         button(data-url='/v1/news/', class='btn animate green') Execute
 
       .row
@@ -37,15 +38,48 @@ block content
       p.api-info.
         Grabs the latest news articles from a list of news sites
 
-      .row.api-options
-        .col-left
-          h4 Options
-          label Site
-          input(type='text', name='site', class='api-input', value='freep,detroitnews')
-        .col-right
-          p Site option, choose from one or many news sites
+      .api-options
+        h4 Options
+        .row
+          include ./site.jade
 
       div
+        hr
+        button(data-url='/v1/news/', class='btn animate green') Execute
+
+      .row
+        h4 Response
+        pre.api-response
+
+  article#v1_news_site_section.api-endpoint
+    div.api-request
+      h3 GET /v1/news/:site/:section/
+    div.api-body
+      p.api-info.
+        Grabs the latest news articles from a list of news sites by section
+
+      .api-options
+        h4 Options
+        .row.api-input-container
+          include ./site.jade
+
+        hr
+
+        .row.api-input-container
+          .col-left
+            label Section
+            input(type='text', name='section', class='api-input', value='sports')
+          .col-right
+            p Comma separated list of sections to grab news articles from.
+            p Here is a list of acceptable sections:
+            ul
+              li home
+              li news
+              li sports
+              li life
+
+      div
+        hr
         button(data-url='/v1/news/', class='btn animate green') Execute
 
       .row
