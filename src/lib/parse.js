@@ -28,6 +28,22 @@ function stripHost(testUrl) {
   }
 }
 
-module.exports = {
-  stripHost
+function removeExtraSpace(arr) {
+  let space = arr.indexOf(' ');
+  let empty = arr.indexOf('');
+
+  if (space > -1) {
+    arr.splice(space, 1);
+  }
+
+  if (empty > -1) {
+    arr.splice(empty, 1);
+  }
+
+  return arr;
 }
+
+module.exports = {
+  stripHost,
+  removeExtraSpace
+};

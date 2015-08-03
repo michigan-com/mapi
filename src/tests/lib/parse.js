@@ -25,3 +25,23 @@ describe('stripHost', function() {
     assert.equal(parse.stripHost(123123), '');
   });
 });
+
+describe('removeExtraSpace', function() {
+  it('should only return one item in list and be non-empty', function(done) {
+    var actual = parse.removeExtraSpace(['', 'freep']);
+    assert.equal(actual.length, 1);
+    assert.equal(actual.indexOf(''), -1);
+    assert.equal(actual.indexOf('freep'), 0);
+    done();
+  });
+
+  it('should only return two items in list and be non-empty', function(done) {
+    var actual = parse.removeExtraSpace(['', 'freep', 'detroitnews', ' ']);
+    assert.equal(actual.length, 2);
+    assert.equal(actual.indexOf(''), -1);
+    assert.equal(actual.indexOf(' '), -1);
+    assert.equal(actual.indexOf('freep'), 0);
+    assert.equal(actual.indexOf('detroitnews'), 1);
+    done();
+  });
+});

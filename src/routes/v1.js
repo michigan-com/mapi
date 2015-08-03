@@ -6,14 +6,21 @@ import _each from 'lodash/collection/forEach';
 import { Article } from '../db';
 import logger from  '../logger';
 import getAsync from '../lib/promise';
-import { stripHost } from '../lib/parse';
+import { stripHost, removeExtraSpace } from '../lib/parse';
 import { sites, sections } from '../lib/constant';
 
 var router = Router();
 
-router.get('/news/', news);
-router.get('/news/:site/', news);
-router.get('/news/:site/:section/', news);
+router.get('/news/', handleNews);
+router.get('/news/:site/', handleNews);
+router.get('/news/:site/:section/', handleNews);
+
+function handleNews(req, res, next) {
+  return news(req, res, next).catch(function(err) {
+    //logger.error(err);
+    next(err);
+  });
+}
 
 async function news(req, res, next) {
   let siteNames = [for (site of sites) if (site) stripHost(site)];
@@ -21,6 +28,9 @@ async function news(req, res, next) {
   let requestedSites = 'site' in req.params ? req.params.site.split(',') : [];
   let requestedSections = 'section' in req.params ? req.params.section.split(',') : [];
   let mongoFilter = {};
+
+  removeExtraSpace(requestedSites);
+  removeExtraSpace(requestedSections);
 
   // Parse the sites params
   let invalidSites = [];
