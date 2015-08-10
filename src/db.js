@@ -38,7 +38,7 @@ function disconnect() {
   });
 }
 
-var ArticleSchema = new Schema({
+/*var ArticleSchema = {
   photo: {
     caption: { type: String, default: null },
     credit: { type: String, default: null },
@@ -63,10 +63,18 @@ var ArticleSchema = new Schema({
   created_at: { type: Date, default: Date.now },
   url: { type: String },
   timestamp: { type: Date, default: null }
-});
+};*/
+
+/*var SnapshotSchema = new Schema({
+  //any: {}
+  articles: [ArticleSchema],
+  created_at: { type: Date, default: Date.now }
+});*/
 
 module.exports = {
-  Article: mongoose.model('Article', ArticleSchema),
+  Article: mongoose.model('Article', new Schema({}), 'Article'),
+  //Snapshot: mongoose.model('Snapshot', SnapshotSchema, 'Snapshot'),
   connect,
   disconnect
 };
+

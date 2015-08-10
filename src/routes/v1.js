@@ -49,7 +49,7 @@ async function news(req, res, next) {
   }
 
   if (requestedSites.length && requestedSites.indexOf('all') == -1) {
-    mongoFilter.source = { $in: requestedSites };
+    mongoFilter['source'] = { $in: requestedSites };
   }
 
   // Parse the section params
@@ -68,17 +68,19 @@ async function news(req, res, next) {
     return next(err);
   }
 
-  if (requestedSections.length) mongoFilter.section = { $in: requestedSections };
+  if (requestedSections.length) {
+    mongoFilter['section'] = { $in: requestedSections };
+  }
 
   let news;
   try {
-    news = await Article.find(mongoFilter).sort({ created_at: -1 }).exec();
+    news = await Article.find(mongoFilter).exec();
   } catch(err) {
     var err = new Error(err);
     err.status = 500;
   }
 
-  res.json({ articles: news });
+  res.json(news);
 }
 
 module.exports = router;
