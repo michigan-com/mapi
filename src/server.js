@@ -11,7 +11,7 @@ import { db } from '../config';
 mongoose.connection.on('error', logger.error);
 
 connect(process.env.MAPI_DB || db).then(function() {
-  news.scheduleTask(app);
+  //news.scheduleTask(app);
 }).catch(function(err) {
   throw new Error(err);
 });
