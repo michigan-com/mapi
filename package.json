@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node --harmony ./dist/server.js"
+    "start": "node --harmony ./dist/server.js",
+    "test": "gulp test"
   },
   "dependencies": {
     "babel": "^5.2.17",

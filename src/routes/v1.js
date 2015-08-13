@@ -27,6 +27,8 @@ async function news(req, res, next) {
 
   let requestedSites = 'site' in req.params ? req.params.site.split(',') : [];
   let requestedSections = 'section' in req.params ? req.params.section.split(',') : [];
+  let limit = 'limit' in req.query ? req.query.limit : 0;
+
   let mongoFilter = {};
 
   removeExtraSpace(requestedSites);
@@ -74,7 +76,11 @@ async function news(req, res, next) {
 
   let news;
   try {
-    news = await Article.find(mongoFilter).exec();
+    news = Article.find(mongoFilter);
+    if (limit > 0) {
+      news = news.limit(limit);
+    }
+    news = await news.exec();
   } catch(err) {
     var err = new Error(err);
     err.status = 500;

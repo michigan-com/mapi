@@ -16,7 +16,7 @@ connect(process.env.MAPI_DB || db).then(function() {
   throw new Error(err);
 });
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.NODE_PORT || '3000');
 app.set('port', port);
 
 logger.info(`[SERVER] Environment: ${app.get('env')}`);

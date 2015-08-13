@@ -38,42 +38,8 @@ function disconnect() {
   });
 }
 
-/*var ArticleSchema = {
-  photo: {
-    caption: { type: String, default: null },
-    credit: { type: String, default: null },
-    full: {
-      url: { type: String },
-      width: { type: Number, default: null },
-      height: { type: Number, default: null }
-    },
-    thumbnail: {
-      url: { type: String, default: null },
-      width: { type: Number, default: null },
-      height: { type: Number, default: null }
-    }
-  },
-  article_id: { type: String },
-  section: { type: String },
-  subsection: { type: String },
-  source: { type: String, trim: true },
-  summary: { type: String },
-  headline: { type: String },
-  subheadline: { type: String, default: null },
-  created_at: { type: Date, default: Date.now },
-  url: { type: String },
-  timestamp: { type: Date, default: null }
-};*/
-
-/*var SnapshotSchema = new Schema({
-  //any: {}
-  articles: [ArticleSchema],
-  created_at: { type: Date, default: Date.now }
-});*/
-
 module.exports = {
   Article: mongoose.model('Article', new Schema({}), 'Article'),
-  //Snapshot: mongoose.model('Snapshot', SnapshotSchema, 'Snapshot'),
   connect,
   disconnect
 };

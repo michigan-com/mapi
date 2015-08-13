@@ -108,6 +108,10 @@ for (let i = 0; i < buttons.length; i++) {
       url = urlFn[endpoint_id](url, options);
     }
 
+    if (options.limit) {
+      url += `?limit=${options.limit}`;
+    }
+
     get(url).then(response => {
       let api_resp = find('api-response', body_el, true);
       api_resp.style.display = 'block';

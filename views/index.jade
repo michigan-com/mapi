@@ -23,6 +23,11 @@ block content
       p.api-info.
         Grabs the latest news articles from all news sources
 
+      .api-options
+        h4 Options
+        .row.api-input-container
+          include ./limit.jade
+
       div
         hr
         button(data-url='/v1/news/', class='btn animate green') Execute
@@ -40,8 +45,11 @@ block content
 
       .api-options
         h4 Options
-        .row
+        .row.api-input-container
           include ./site.jade
+
+        .row.api-input-container
+          include ./limit.jade
 
       div
         hr
@@ -77,6 +85,9 @@ block content
               li news
               li sports
               li life
+
+        .row.api-input-container
+          include ./limit.jade
 
       div
         hr
