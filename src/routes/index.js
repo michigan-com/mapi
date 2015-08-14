@@ -19,9 +19,11 @@ router.get('/test_socket/', function(req, res, next) {
  * HACK -- Because michigan.com uses outlook for their @michigan.com email,
  * microsoft requests this file from all subdomains.
  */
-router.get('/autodiscover/autodiscover.xml', function(req, res, next) {
+router.all('/autodiscover/autodiscover.xml', function(req, res, next) {
   res.send('');
 });
+
+
 
 var socket = {
   articles: function(app) {
