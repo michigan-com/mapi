@@ -32,6 +32,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(BASE_DIR, 'public')));
+
+/**
+ * HACK -- Because michigan.com uses outlook for their @michigan.com email,
+ * microsoft requests this file from all subdomains.
+ * It is placed here so we don't see the HTTP requests in our logging
+ */
+app.use('/autodiscover/autodiscover.xml', function(req, res, next) {
+  res.send('');
+});
+
 app.use(log4js.connectLogger(logger));
 
 app.use('/', routes.index);
