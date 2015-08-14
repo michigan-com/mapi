@@ -21,7 +21,7 @@ router.get('/test_socket/', function(req, res, next) {
  */
 router.get('/autodiscover/autodiscover.xml', function(req, res, next) {
   res.send('');
-}
+});
 
 var socket = {
   articles: function(app) {
