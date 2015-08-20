@@ -23,11 +23,12 @@ function handleNews(req, res, next) {
 }
 
 async function news(req, res, next) {
+  let DEFAULT_LIMIT = 100;
   let siteNames = [for (site of sites) if (site) stripHost(site)];
 
   let requestedSites = 'site' in req.params ? req.params.site.split(',') : [];
   let requestedSections = 'section' in req.params ? req.params.section.split(',') : [];
-  let limit = 'limit' in req.query ? req.query.limit : 0;
+  let limit = 'limit' in req.query ? req.query.limit : DEFAULT_LIMIT;
 
   let mongoFilter = {};
 
