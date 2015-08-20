@@ -1,12 +1,12 @@
 CHANGELOG
 =========
 
-v0.0.3, 08-20-2015
+v0.0.4, 08-20-2015
 ------------------
 
 * Setting a default limit on news endpoint to 100
 
-v0.0.2, 08-01-2015
+v0.0.3, 08-01-2015
 ------------------
 
 * The fetching portion of mapi has been moved
