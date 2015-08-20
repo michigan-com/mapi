@@ -31,19 +31,19 @@ describe('API Routes', function() {
 
   describe('/v1/news/', function() {
     it('should return all articles', function(done) {
-      testValidRoute('/v1/news/', {}, done);
+      testValidRoute('/v1/news/?limit=0', {}, done);
     });
 
     it('freep/ with should return all articles for freep', function(done) {
-      testValidRoute('/v1/news/freep/', { source: 'freep' }, done);
+      testValidRoute('/v1/news/freep/?limit=0', { source: 'freep' }, done);
     });
 
     it('freep,detroitnews/ should return all articles for freep and detroitnews', function(done) {
-      testValidRoute('/v1/news/freep,detroitnews/', { source: { $in: ['freep', 'detroitnews'] } }, done);
+      testValidRoute('/v1/news/freep,detroitnews/?limit=0', { source: { $in: ['freep', 'detroitnews'] } }, done);
     });
 
     it('freep/sports/ should return all articles for freep in sports section', function(done) {
-      testValidRoute('/v1/news/freep/sports/', { source: 'freep', section: 'sports' }, done);
+      testValidRoute('/v1/news/freep/sports/?limit=0', { source: 'freep', section: 'sports' }, done);
     });
 
     it('asdfasdf/ should return error response', function(done) {

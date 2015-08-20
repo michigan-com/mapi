@@ -13,11 +13,5 @@ module.exports = {
     'news',
     'sports',
     'life'
-  ],
-  modules: [
-    'hero',
-    'headline-grid',
-    'featured-content',
-    'sports-pulse',
   ]
 };
