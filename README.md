@@ -46,20 +46,19 @@ gulp
 ```
 
 ```bash
-npm start
+DEBUG=* npm start
 # or
-node --harmony ./dist/app.js
+DEBUG=* node ./dist/app.js
 ```
 
 ## Environmental Variables
 * NODE_ENV, 'production' or 'development', default development
 * NODE_PORT, the port number to run the server over, default 3000
-* LOG_LEVEL, the level to output log messages,
-levels can only output levels ahead of itself (TRACE -> DEBUG -> INFO -> WARN -> ERROR -> FATAL), default DEBUG
+* LOG_REQUEST, will log all HTTP requests regardless of NODE_ENV
 
 ```bash
-NODE_ENV=production npm start
-NODE_PORT=1337 LOG_LEVEL=WARN npm start
+NODE_ENV='production' npm start
+NODE_PORT=1337 LOG_REQUEST=true npm start
 ```
 
 #### Docker (optional)

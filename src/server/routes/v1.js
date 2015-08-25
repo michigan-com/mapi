@@ -13,6 +13,29 @@ import { sites, sections } from '../lib/constant';
 
 var router = Router();
 
+router.get('/article/:id/', function(req, res, next) {
+  return (async function(req, res, next) {
+    let article;
+    try {
+      article = await Article.findOne({ article_id: parseInt(req.params.id) }).exec();
+    } catch(err) {
+      next(err);
+    }
+
+    if (!article) {
+      var err = new Error(`Could not find article with id ${req.params.id}`);
+      err.status = 404;
+      err.type = 'json';
+      next(err);
+      return;
+    }
+
+    res.json(article);
+  })(req, res, next).catch(function(err) {
+    next(err);
+  });
+});
+
 router.get('/news/', handleNews);
 router.get('/news/:site/', handleNews);
 router.get('/news/:site/:section/', handleNews);
@@ -49,6 +72,7 @@ async function news(req, res, next) {
     let sites = invalidSites.join(', ');
     var err = new Error(`Invalid query argument, site '${sites}' not allowed`);
     err.status = 422;
+    err.type = 'json';
     return next(err);
   }
 
@@ -69,6 +93,7 @@ async function news(req, res, next) {
     let sections = invalidSections.join(', ');
     var err = new Error(`Invalid query argument, section '${sections}' not allowed`);
     err.status = 422;
+    err.type = 'json';
     return next(err);
   }
 
@@ -86,6 +111,7 @@ async function news(req, res, next) {
   } catch(err) {
     var err = new Error(err);
     err.status = 500;
+    err.type = 'json';
   }
 
   res.json({ articles: news });

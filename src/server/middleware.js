@@ -11,27 +11,27 @@ import cookieParser from 'cookie-parser';
 import mail from './mail';
 
 var BASE_DIR = path.dirname(__dirname);
-var apiErrorCodes = [422];
 
 export default function configureMiddleware(app) {
   var env = app.get('env');
   app.use(function(err, req, res, next) {
-    if (apiErrorCodes.indexOf(err.status) == -1) {
+    if (err.type != 'json') {
       next(err);
-    } else {
-      res.status(err.status || 500);
-      res.json({
-        message: err.message,
-        error: err
-      });
+      return;
     }
+
+    res.status(err.status || 500);
+    res.json({
+      message: err.message,
+      error: err
+    });
   });
 
   if (env === 'development' || env === 'testing') {
     app.use(morgan('dev'));
     app.use(errorhandler());
   } else if (process.env.LOG_REQUEST) {
-    app.use(morgan());
+    app.use(morgan('combined'));
   }
 
   app.use(favicon(path.join(BASE_DIR, '/public/favicon.ico')));
