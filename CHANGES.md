@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+v0.0.5, 08-25-2015
+------------------
+
+* Reorganized folder structure based on Andrey's https://github.com/michigan-com/SpeedNewsReader
+* Added new endpoint, /v1/article/:id/ which will fetch the individual data for that article (news site id, not mongo id
+
 v0.0.4, 08-20-2015
 ------------------
 
