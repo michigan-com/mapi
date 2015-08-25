@@ -20,13 +20,13 @@ var browserifyShim = require('browserify-shim');
 
 var config = require('./config');
 
-var jsSrc = './public/js/src/';
+var jsSrc = './src/client/';
 var jsBundle = ['api.js', 'test_socket.js'];
 
 var testFiles = './dist/tests/**/*.js';
 
 gulp.task('sass', function() {
-  var cssSrc = './public/scss/';
+  var cssSrc = './src/scss/';
   var cssDist = './public/css/';
   var cssFiles = cssSrc + '**/*.scss';
 
@@ -59,14 +59,14 @@ gulp.task('watch', function() {
   });
 
   gutil.log('Watching node modules ...');
-  gulp.watch('./src/**/*.js', ['babel']);
+  gulp.watch('./src/server/**/*.js', ['babel']);
 
   gutil.log('Watching scss files ...');
-  gulp.watch('./public/scss/**/*.scss', ['sass']);
+  gulp.watch('./src/scss/**/*.scss', ['sass']);
 });
 
 gulp.task('babel', function() {
-  var src = './src/**/*.js';
+  var src = './src/server/**/*.js';
   var dist = './dist';
 
   gutil.log('Babel is generating ' + src + ' files to ' + dist + ' ...');
@@ -90,7 +90,7 @@ gulp.task('test', ['babel'], function() {
 
 function bundlejs(file, bcb, src, dist) {
   if (typeof src === 'undefined') src = jsSrc;
-  if (typeof dist === 'undefined') dist = './public/js/dist/';
+  if (typeof dist === 'undefined') dist = './public/js/';
 
   var srcFull = src + file;
   var distFull = dist + file;

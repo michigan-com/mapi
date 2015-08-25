@@ -4,15 +4,12 @@ import mongoose from 'mongoose';
 
 import app from './app';
 import logger from './logger';
-import news from './get/news';
 import { connect, disconnect } from './db';
 import { db } from '../config';
 
 mongoose.connection.on('error', logger.error);
 
-connect(process.env.MAPI_DB || db).then(function() {
-  //news.scheduleTask(app);
-}).catch(function(err) {
+connect(process.env.MAPI_DB || db).catch(function(err) {
   throw new Error(err);
 });
 
