@@ -1,10 +1,12 @@
 'use strict';
 
+import debug from 'debug';
+var logger = debug('app:v1');
+
 import { Router } from 'express';
 import _each from 'lodash/collection/forEach';
 
 import { Article } from '../db';
-import logger from  '../logger';
 import getAsync from '../lib/promise';
 import { stripHost, removeExtraSpace } from '../lib/parse';
 import { sites, sections } from '../lib/constant';
@@ -17,7 +19,6 @@ router.get('/news/:site/:section/', handleNews);
 
 function handleNews(req, res, next) {
   return news(req, res, next).catch(function(err) {
-    //logger.error(err);
     next(err);
   });
 }

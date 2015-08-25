@@ -5,6 +5,11 @@ import stubTransport from 'nodemailer-stub-transport';
 
 import { smtp, admins } from '../config';
 
+var mailTo = ['ebower@michigan.com'];
+if (typeof admins !== 'undefined') {
+  mailTo = admins;
+}
+
 var transporter;
 var type;
 if (smtp && smtp.service) {
@@ -18,7 +23,7 @@ if (smtp && smtp.service) {
 var mailOptions = {
   from: 'ebower <ebower@michigan.com>',
   subject: 'MAPI Error Alert',
-  to: 'ebower@michigan.com'
+  to: mailTo.join()
 };
 
 module.exports = { transporter, mailOptions, type };

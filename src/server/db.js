@@ -1,8 +1,10 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import debug from 'debug';
+var logger = debug('app:db');
+
 import { db } from '../config';
-import logger from './logger';
 
 if (typeof db === 'undefined') {
   throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
@@ -17,22 +19,22 @@ const defaults = {
 };
 
 function connect(dbString=db, options=defaults) {
-  logger.info(`[DATABASE] Connecting to: ${dbString}`);
+  logger(`Connecting to: ${dbString}`);
   return new Promise(function(resolve, reject) {
     mongoose.connect(dbString, options, function(err) {
       if (err) reject(err);
-      logger.info('[DATABASE] Connected to mongodb!');
+      logger('Connected to mongodb!');
       resolve(true);
     });
   });
 }
 
 function disconnect() {
-  logger.info('[DATABASE] Disconnecting from mongodb ...');
+  logger('Disconnecting from mongodb ...');
   return new Promise(function(resolve, reject) {
     mongoose.disconnect(function(err) {
       if (err) reject(err);
-      logger.info('[DATABASE] Disconnected from mongodb!');
+      logger('Disconnected from mongodb!');
       resolve(true);
     });
   });
