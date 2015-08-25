@@ -6,7 +6,6 @@ import { assert } from 'chai';
 import mocha from 'mocha';
 
 import { Article } from '../../db';
-import logger from '../../logger';
 import app from '../../app';
 import { connect, disconnect } from '../../db';
 import { testDb } from '../../../config';
@@ -16,7 +15,6 @@ describe('API Routes', function() {
     try {
       await connect(testDb);
     } catch (err) {
-      logger.error(err);
       done(err);
     }
 
