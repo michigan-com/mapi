@@ -106,7 +106,7 @@ async function news(req, res, next) {
     if (limit > 0) {
       news = news.limit(limit);
     }
-    news = await news.exec();
+    news = await news.sort({ timestamp: -1 }).exec();
   } catch(err) {
     var err = new Error(err);
     err.status = 500;
