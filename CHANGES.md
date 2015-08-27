@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+v0.0.6, 08-27-2015
+------------------
+
+* Articles are not being sorted properly on the server
+
 v0.0.5, 08-25-2015
 ------------------
 
