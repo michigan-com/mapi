@@ -39,6 +39,12 @@ export default function configureMiddleware(app) {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(express.static(path.join(BASE_DIR, 'public')));
+  app.use( function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+    next();
+  });
 
   app.use(function(err, req, res, next) {
     mail.mailOptions.text = `
