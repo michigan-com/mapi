@@ -1,6 +1,5 @@
 import chance from 'chance';
-import { sites, modules } from '../lib/constant';
-import { stripHost } from '../lib/parse';
+import { Sites, StripHost } from '../lib/index';
 
 let Chance = chance();
 

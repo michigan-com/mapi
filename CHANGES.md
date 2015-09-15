@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+v0.0.8, 09-15-2015
+------------------
+
+* Added Toppage mongoose collection
+* Added routes for popular event request and socket events
+* Refactored library files
+* Refactored async/await route requests
+
 v0.0.7, 09-09-2015
 ------------------
 

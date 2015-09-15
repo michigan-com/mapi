@@ -42,6 +42,7 @@ function disconnect() {
 
 module.exports = {
   Article: mongoose.model('Article', new Schema({}), 'Article'),
+  Toppages: mongoose.model('Toppages', new Schema({}), 'Toppages'),
   connect,
   disconnect
 };

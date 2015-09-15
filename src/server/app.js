@@ -35,5 +35,6 @@ function configureRoutes(app) {
   app.use('/', routes.index);
   app.use('/v1/', routes.v1);
   routes.socket.articles(app);
+  routes.socket.popular(app);
 }
 

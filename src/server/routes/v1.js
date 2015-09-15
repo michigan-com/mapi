@@ -7,47 +7,30 @@ import { Router } from 'express';
 import _each from 'lodash/collection/forEach';
 
 import { Article } from '../db';
-import getAsync from '../lib/promise';
-import { stripHost, removeExtraSpace } from '../lib/parse';
-import { sites, sections } from '../lib/constant';
+import { Catch, StripHost, RemoveExtraSpace, Sites, Sections } from '../lib/index';
 
 var router = Router();
 
-router.get('/article/:id/', function(req, res, next) {
-  return (async function(req, res, next) {
-    let article;
-    try {
-      article = await Article.findOne({ article_id: parseInt(req.params.id) }).exec();
-    } catch(err) {
-      next(err);
-    }
+router.get('/article/:id/', Catch(async function(req, res, next) {
+  let article = await Article.findOne({ article_id: parseInt(req.params.id) }).exec();
 
-    if (!article) {
-      var err = new Error(`Could not find article with id ${req.params.id}`);
-      err.status = 404;
-      err.type = 'json';
-      return next(err);
-    }
+  if (!article) {
+    var err = new Error(`Could not find article with id ${req.params.id}`);
+    err.status = 404;
+    err.type = 'json';
+    return next(err);
+  }
 
-    res.json(article);
-  })(req, res, next).catch(function(err) {
-    next(err);
-  });
-});
+  res.json(article);
+}));
 
-router.get('/news/', handleNews);
-router.get('/news/:site/', handleNews);
-router.get('/news/:site/:section/', handleNews);
-
-function handleNews(req, res, next) {
-  return news(req, res, next).catch(function(err) {
-    next(err);
-  });
-}
+router.get('/news/', Catch(news));
+router.get('/news/:site/', Catch(news));
+router.get('/news/:site/:section/', Catch(news));
 
 async function news(req, res, next) {
   let DEFAULT_LIMIT = 100;
-  let siteNames = [for (site of sites) if (site) stripHost(site)];
+  let siteNames = [for (site of Sites) if (site) StripHost(site)];
 
   let requestedSites = 'site' in req.params ? req.params.site.split(',') : [];
   let requestedSections = 'section' in req.params ? req.params.section.split(',') : [];
@@ -55,8 +38,8 @@ async function news(req, res, next) {
 
   let mongoFilter = {};
 
-  removeExtraSpace(requestedSites);
-  removeExtraSpace(requestedSections);
+  RemoveExtraSpace(requestedSites);
+  RemoveExtraSpace(requestedSections);
 
   // Parse the sites params
   let invalidSites = [];
@@ -82,7 +65,7 @@ async function news(req, res, next) {
   // Parse the section params
   let invalidSections = [];
   _each(requestedSections, (section) => {
-    if (sections.indexOf(section) == -1) {
+    if (Sections.indexOf(section) == -1) {
       invalidSections.push(section);
     }
   });
