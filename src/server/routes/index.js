@@ -19,7 +19,7 @@ router.get('/test_socket/', function(req, res, next) {
 });
 
 router.get('/popular/', Catch(async function(req, res, next) {
-  let snapshot = await Toppages.findOne().sort({ _id: 1 }).exec();
+  let snapshot = await Toppages.findOne().sort({ _id: -1 }).exec();
   req.io.broadcast('got_popular', { snapshot });
   res.json({ success: true });
 }));
@@ -33,7 +33,7 @@ var socket = {
   },
   popular: function(app) {
     return app.io.route('get_popular', Catch(async function(req, res, next) {
-      let snapshot = await Toppages.findOne().sort({ _id: 1 }).exec();
+      let snapshot = await Toppages.findOne().sort({ _id: -1 }).exec();
       req.io.emit('got_popular', { snapshot });
     }));
   }
