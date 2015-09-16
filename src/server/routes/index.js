@@ -22,6 +22,11 @@ router.get('/popular/', Catch(async function(req, res, next) {
   let snapshot = await Toppages.findOne().sort({ _id: -1 }).exec();
   req.io.broadcast('got_popular', { snapshot });
   res.json({ success: true });
+
+  // Remove all not new snapshots
+  logger("Removing past snapshots");
+  let result = await Toppages.find().remove({ _id: { $ne: snapshot._id }});
+  logger("removed");
 }));
 
 var socket = {
@@ -35,6 +40,7 @@ var socket = {
     return app.io.route('get_popular', Catch(async function(req, res, next) {
       let snapshot = await Toppages.findOne().sort({ _id: -1 }).exec();
       req.io.emit('got_popular', { snapshot });
+
     }));
   }
 };
