@@ -1,6 +1,6 @@
 {
   "name": "mapi",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "private": true,
   "scripts": {
     "start": "node --harmony ./dist/server.js",
