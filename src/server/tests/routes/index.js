@@ -6,7 +6,7 @@ import { assert } from 'chai';
 import mocha from 'mocha';
 
 import { Article } from '../../db';
-import app from '../../app';
+import { app } from '../../app';
 import { connect, disconnect } from '../../db';
 import { testDb } from '../../../config';
 

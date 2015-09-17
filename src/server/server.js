@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import debug from 'debug';
 var logger = debug('app:status');
 
-import app from './app';
+import { app, server, io } from './app';
 import { connect, disconnect } from './db';
 import { db } from '../config';
 
@@ -17,18 +17,17 @@ connect(process.env.MAPI_DB || db).catch(function(err) {
 var port = normalizePort(process.env.NODE_PORT || '3000');
 app.set('port', port);
 
+server.on('close', function() {
+  logger("Closed nodejs application ...");
+  disconnect();
+});
+
 logger(`Environment: ${app.get('env')}`);
-var server = app.listen(port, '0.0.0.0', function(err) {
+server.listen(port, '0.0.0.0', function(err) {
   if (err) throw new Error(err);
 
   let host = this.address();
   logger(`Started on ${host.address}:${host.port}`);
-});
-export default server;
-
-server.on('close', function() {
-  logger("Closed nodejs application ...");
-  disconnect();
 });
 
 function normalizePort(val) {

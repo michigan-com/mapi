@@ -6,7 +6,7 @@ import v1 from './v1';
 import { Article, Toppages } from '../db';
 import { Catch } from '../lib/index';
 import debug from 'debug';
-var logger = debug('app:db');
+var logger = debug('app:route');
 
 var router = Router();
 
@@ -19,8 +19,8 @@ router.get('/test_socket/', function(req, res, next) {
 });
 
 router.get('/popular/', Catch(async function(req, res, next) {
-  let snapshot = await Toppages.findOne().sort({ _id: -1 }).exec();
-  req.io.broadcast('got_popular', { snapshot });
+  let snapshot = await Toppages.findOne().sort({ _id: 1 }).exec();
+  req.io.emit('got_popular', { snapshot });
   res.json({ success: true });
 
   // Remove all not new snapshots
@@ -29,24 +29,22 @@ router.get('/popular/', Catch(async function(req, res, next) {
   logger("removed");
 }));
 
-var socket = {
-  articles: function(app) {
-    return app.io.route('get_articles', Catch(async function(req, res, next) {
-      let articles = await Article.find(req.data).exec();
-      req.io.emit('got_articles', { articles, filters: req.data });
-    }));
-  },
-  popular: function(app) {
-    return app.io.route('get_popular', Catch(async function(req, res, next) {
-      let snapshot = await Toppages.findOne().sort({ _id: -1 }).exec();
-      req.io.emit('got_popular', { snapshot });
+function articles(socket) {
+  socket.on('get_articles', Catch(async function(req, res, next) {
+    let articles = await Article.find(req.data).exec();
+    socket.emit('got_articles', { articles, filters: req.data });
+  }));
+}
 
-    }));
-  }
-};
+function popular(socket) {
+  socket.on('get_popular', Catch(async function() {
+    let snapshot = await Toppages.findOne().sort({ _id: 1 }).exec();
+    socket.emit('got_popular', { snapshot });
+  }));
+}
 
 function getPopular() {
   return Toppage.find().sort({ _id: 1 }).limit(1);
 }
 
-module.exports = { index: router, v1, socket };
+module.exports = { index: router, v1, popular, articles };

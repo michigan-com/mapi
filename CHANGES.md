@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+v0.0.9, 09-17-2015
+------------------
+
+* Removed old dependencies
+* Replaced express.io for socket.io
+
 v0.0.8, 09-15-2015
 ------------------
 

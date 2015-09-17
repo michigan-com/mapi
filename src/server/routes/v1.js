@@ -4,7 +4,6 @@ import debug from 'debug';
 var logger = debug('app:v1');
 
 import { Router } from 'express';
-import _each from 'lodash/collection/forEach';
 
 import { Article } from '../db';
 import { Catch, StripHost, RemoveExtraSpace, Sites, Sections } from '../lib/index';
@@ -43,11 +42,12 @@ async function news(req, res, next) {
 
   // Parse the sites params
   let invalidSites = [];
-  _each(requestedSites, (site) => {
+  for (let i = 0; i < requestedSites.length; i++) {
+    let site = requestedSites[i];
     if (siteNames.indexOf(site) == -1 && site != 'all') {
       invalidSites.push(site)
     }
-  });
+  }
 
   if (invalidSites.length) {
     // unprocessable, throw correct response code
@@ -64,11 +64,12 @@ async function news(req, res, next) {
 
   // Parse the section params
   let invalidSections = [];
-  _each(requestedSections, (section) => {
+  for (let i = 0; i < requestedSections.length; i++) {
+    let section = requestedSections[i];
     if (Sections.indexOf(section) == -1) {
       invalidSections.push(section);
     }
-  });
+  }
 
   if (invalidSections.length) {
     // unprocessable, throw correct response code

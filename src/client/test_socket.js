@@ -1,7 +1,7 @@
 'use strict';
 
-import io from 'socket.io-browserify';
-var socket = io.connect()
+import io from 'socket.io-client';
+var socket = io();
 
 socket.emit('get_popular');
 socket.on('got_popular', function(data) {
