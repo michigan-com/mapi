@@ -18,6 +18,30 @@ block content
 
   article#v1_news.api-endpoint
     div.api-request
+      h3 GET /v1/article/:id/
+    div.api-body
+      p.api-info.
+        Grabs data for a single article
+
+      .api-options
+        h4 Required
+        .row.api-input-container
+          .col-left
+            label Id
+            input(type='text', name='id', class='api-input', value='')
+          .col-right
+            p Unique article id
+
+      div
+        hr
+        button(data-url='/v1/article/', class='btn animate green') Execute
+
+      .row
+        h4 Response
+        pre.api-response
+
+  article#v1_news.api-endpoint
+    div.api-request
       h3 GET /v1/news/
     div.api-body
       p.api-info.

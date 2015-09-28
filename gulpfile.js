@@ -15,10 +15,6 @@ var babelify = require("babelify");
 var browserify = require('browserify');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
-var each = require('lodash/collection/forEach');
-var browserifyShim = require('browserify-shim');
-
-var config = require('./config');
 
 var jsSrc = './src/client/';
 var jsBundle = ['api.js', 'test_socket.js'];
@@ -45,18 +41,21 @@ gulp.task('browserify', function(cb) {
       if (counter == jsBundle.length) return cb();
     };
   })();
-  each(jsBundle, function(fname) {
+
+  for (var i = 0; i < jsBundle.length; i++) {
+    var fname = jsBundle[i];
     bundlejs(fname, bcb);
-  });
+  }
 });
 
 gulp.task('watch', function() {
-  each(jsBundle, function(fname) {
+  for (var i = 0; i < jsBundle.length; i++) {
+    var fname = jsBundle[i];
     gutil.log('Watching ' + fname + ' ...');
     gulp.watch(jsSrc + fname, function() {
       return bundlejs(fname);
     });
-  });
+  }
 
   gutil.log('Watching node modules ...');
   gulp.watch('./src/server/**/*.js', ['babel']);
@@ -105,7 +104,6 @@ function bundlejs(file, bcb, src, dist) {
   var b = browserify(srcFull, { debug: true });
   return b
     .transform(babelify.configure({ stage: 0, optional: ['runtime'] }))
-    .transform(browserifyShim, { global: true })
     .bundle()
     .pipe(source(file))
     .pipe(buffer())

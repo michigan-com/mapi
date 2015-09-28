@@ -2,7 +2,7 @@
 
 import url from 'url';
 
-function stripHost(testUrl) {
+function StripHost(testUrl) {
   /**
    * Given a url name (e.g. freep.com), strip out all the extra and just use
    * the domain name (e.g http://www.freep.com/sports -> freep)
@@ -28,7 +28,7 @@ function stripHost(testUrl) {
   }
 }
 
-function removeExtraSpace(arr) {
+function RemoveExtraSpace(arr) {
   let space = arr.indexOf(' ');
   let empty = arr.indexOf('');
 
@@ -44,6 +44,6 @@ function removeExtraSpace(arr) {
 }
 
 module.exports = {
-  stripHost,
-  removeExtraSpace
+  StripHost,
+  RemoveExtraSpace
 };

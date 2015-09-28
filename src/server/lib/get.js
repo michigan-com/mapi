@@ -4,7 +4,7 @@ import debug from 'debug';
 var logger = debug('app:promise');
 import request from 'request';
 
-export default function getAsync(url, options) {
+export default function Get(url, options) {
   return new Promise(function(resolve, reject) {
     logger(`Grabbing: ${url}`);
     request.get(url, options, function(err, response, body) {

@@ -1,5 +1,5 @@
 module.exports = {
-  sites: [
+  Sites: [
     'detroitnews.com',
     'freep.com',
     'battlecreekenquirer.com',
@@ -8,7 +8,7 @@ module.exports = {
     'livingstondaily.com',
     'thetimesherald.com',
   ],
-  sections: [
+  Sections: [
     'home',
     'news',
     'sports',

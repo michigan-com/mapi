@@ -112,6 +112,10 @@ for (let i = 0; i < buttons.length; i++) {
       url += `?limit=${options.limit}`;
     }
 
+    if (options.id) {
+      url += `${options.id}/`;
+    }
+
     get(url).then(response => {
       let api_resp = find('api-response', body_el, true);
       api_resp.style.display = 'block';

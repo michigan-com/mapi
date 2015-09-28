@@ -6,8 +6,7 @@ import { assert } from 'chai';
 import mocha from 'mocha';
 
 import { Article } from '../../db';
-import logger from '../../logger';
-import app from '../../app';
+import { app } from '../../app';
 import { connect, disconnect } from '../../db';
 import { testDb } from '../../../config';
 
@@ -16,7 +15,6 @@ describe('API Routes', function() {
     try {
       await connect(testDb);
     } catch (err) {
-      logger.error(err);
       done(err);
     }
 
@@ -50,6 +48,23 @@ describe('API Routes', function() {
       request(app)
         .get('/v1/news/asdfasdf/')
         .expect(422, done);
+    });
+
+    it('should return articles in descending order according to their timestamp', function(done) {
+      request(app)
+        .get('/v1/news/')
+        .expect(200)
+        .end(function(err, res) {
+          if (err) throw done(err);
+
+          var last_timestamp = new Date(res.body.articles[0].timestamp);
+          for (var i = 0; i < res.body.articles.length; i++) {
+            var cur_timestamp = new Date(res.body.articles[i].timestamp);
+            assert.isTrue(last_timestamp.getTime() >= cur_timestamp.getTime(), 'Previous timestamp must be greater than its successor');
+            last_timestamp = cur_timestamp;
+          }
+          done();
+        });
     });
 
     it('should return 20 articles when limit query parameter is present', function(done) {

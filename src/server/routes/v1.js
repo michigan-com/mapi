@@ -10,6 +10,7 @@ import { Article } from '../db';
 import getAsync from '../lib/promise';
 import { stripHost, removeExtraSpace } from '../lib/parse';
 import { sites, sections } from '../lib/constant';
+import * as recipes from './v1/recipes';
 
 var router = Router();
 
@@ -39,6 +40,7 @@ router.get('/article/:id/', function(req, res, next) {
 router.get('/news/', handleNews);
 router.get('/news/:site/', handleNews);
 router.get('/news/:site/:section/', handleNews);
+router.get('/recipes/', recipes.index);
 
 function handleNews(req, res, next) {
   return news(req, res, next).catch(function(err) {

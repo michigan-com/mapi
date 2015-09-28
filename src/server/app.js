@@ -1,20 +1,30 @@
 'use strict';
 
 import path from 'path';
-import express from 'express.io';
+import http from 'http';
+import Express from 'express';
+import SocketIO from 'socket.io';
+import debug from 'debug';
+var logger = debug("app:socket");
 
+//import { Catch } from './lib/index';
+//import { Toppages } from './db';
 import routes from './routes/index';
 import configureMiddleware from './middleware.js';
 
 var BASE_DIR = path.dirname(__dirname);
 
-var app = express();
-app.http().io();
-export default app;
+var app = Express();
+var server = http.Server(app);
+var io = SocketIO(server);
 
 configureViewEngine(app);
-configureRoutes(app);
+configureRoutes(app, io);
 configureMiddleware(app);
+
+if (app.get('env') == 'development') {
+  app.set('json spaces', 2);
+}
 
 function configureViewEngine(app) {
   app.set('views', path.join(BASE_DIR, 'views'));
@@ -22,7 +32,7 @@ function configureViewEngine(app) {
   if (app.get('env') == 'development') app.locals.pretty = true;
 }
 
-function configureRoutes(app) {
+function configureRoutes(app, io) {
   /**
    * HACK -- Because michigan.com uses outlook for their @michigan.com email,
    * microsoft requests this file from all subdomains.
@@ -32,8 +42,19 @@ function configureRoutes(app) {
     res.send('');
   });
 
+  app.use(function(req, res, next) {
+    req.io = io;
+    next();
+  });
+
   app.use('/', routes.index);
   app.use('/v1/', routes.v1);
-  routes.socket.articles(app);
+
+  io.on('connection', function(socket) {
+    logger("Connected to SocketIO!");
+    routes.popular(socket);
+    routes.articles(socket);
+  });
 }
 
+module.exports = { app, server, io };

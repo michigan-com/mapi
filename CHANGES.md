@@ -1,6 +1,36 @@
 CHANGELOG
 =========
 
+v0.0.9, 09-17-2015
+------------------
+
+* Removed old dependencies
+* Replaced express.io for socket.io
+
+v0.0.8, 09-15-2015
+------------------
+
+* Added Toppage mongoose collection
+* Added routes for popular event request and socket events
+* Refactored library files
+* Refactored async/await route requests
+
+v0.0.7, 09-09-2015
+------------------
+
+* Added CORS support
+
+v0.0.6, 08-27-2015
+------------------
+
+* Articles are not being sorted properly on the server
+
+v0.0.5, 08-25-2015
+------------------
+
+* Reorganized folder structure based on Andrey's https://github.com/michigan-com/SpeedNewsReader
+* Added new endpoint, /v1/article/:id/ which will fetch the individual data for that article (news site id, not mongo id
+
 v0.0.4, 08-20-2015
 ------------------
 
