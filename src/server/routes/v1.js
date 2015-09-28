@@ -4,53 +4,34 @@ import debug from 'debug';
 var logger = debug('app:v1');
 
 import { Router } from 'express';
-import _each from 'lodash/collection/forEach';
 
 import { Article } from '../db';
-import getAsync from '../lib/promise';
-import { stripHost, removeExtraSpace } from '../lib/parse';
-import { sites, sections } from '../lib/constant';
+import { Catch, StripHost, RemoveExtraSpace, Sites, Sections } from '../lib/index';
 import * as recipes from './v1/recipes';
 
 var router = Router();
 
-router.get('/article/:id/', function(req, res, next) {
-  return (async function(req, res, next) {
-    let article;
-    try {
-      article = await Article.findOne({ article_id: parseInt(req.params.id) }).exec();
-    } catch(err) {
-      next(err);
-    }
+router.get('/article/:id/', Catch(async function(req, res, next) {
+  let article = await Article.findOne({ article_id: parseInt(req.params.id) }).exec();
 
-    if (!article) {
-      var err = new Error(`Could not find article with id ${req.params.id}`);
-      err.status = 404;
-      err.type = 'json';
-      next(err);
-      return;
-    }
+  if (!article) {
+    var err = new Error(`Could not find article with id ${req.params.id}`);
+    err.status = 404;
+    err.type = 'json';
+    return next(err);
+  }
 
-    res.json(article);
-  })(req, res, next).catch(function(err) {
-    next(err);
-  });
-});
+  res.json(article);
+}));
 
-router.get('/news/', handleNews);
-router.get('/news/:site/', handleNews);
-router.get('/news/:site/:section/', handleNews);
+router.get('/news/', Catch(news));
+router.get('/news/:site/', Catch(news));
+router.get('/news/:site/:section/', Catch(news));
 router.get('/recipes/', recipes.index);
-
-function handleNews(req, res, next) {
-  return news(req, res, next).catch(function(err) {
-    next(err);
-  });
-}
 
 async function news(req, res, next) {
   let DEFAULT_LIMIT = 100;
-  let siteNames = [for (site of sites) if (site) stripHost(site)];
+  let siteNames = [for (site of Sites) if (site) StripHost(site)];
 
   let requestedSites = 'site' in req.params ? req.params.site.split(',') : [];
   let requestedSections = 'section' in req.params ? req.params.section.split(',') : [];
@@ -58,16 +39,17 @@ async function news(req, res, next) {
 
   let mongoFilter = {};
 
-  removeExtraSpace(requestedSites);
-  removeExtraSpace(requestedSections);
+  RemoveExtraSpace(requestedSites);
+  RemoveExtraSpace(requestedSections);
 
   // Parse the sites params
   let invalidSites = [];
-  _each(requestedSites, (site) => {
+  for (let i = 0; i < requestedSites.length; i++) {
+    let site = requestedSites[i];
     if (siteNames.indexOf(site) == -1 && site != 'all') {
       invalidSites.push(site)
     }
-  });
+  }
 
   if (invalidSites.length) {
     // unprocessable, throw correct response code
@@ -84,11 +66,12 @@ async function news(req, res, next) {
 
   // Parse the section params
   let invalidSections = [];
-  _each(requestedSections, (section) => {
-    if (sections.indexOf(section) == -1) {
+  for (let i = 0; i < requestedSections.length; i++) {
+    let section = requestedSections[i];
+    if (Sections.indexOf(section) == -1) {
       invalidSections.push(section);
     }
-  });
+  }
 
   if (invalidSections.length) {
     // unprocessable, throw correct response code
@@ -109,15 +92,15 @@ async function news(req, res, next) {
     if (limit > 0) {
       news = news.limit(limit);
     }
-    news = await news.exec();
+    news = await news.sort({ timestamp: -1 }).exec();
   } catch(err) {
     var err = new Error(err);
     err.status = 500;
     err.type = 'json';
+    return next(err);
   }
 
   res.json({ articles: news });
 }
 
 module.exports = router;
-
