@@ -7,6 +7,7 @@ import { Router } from 'express';
 
 import { Article } from '../db';
 import { Catch, StripHost, RemoveExtraSpace, Sites, Sections } from '../lib/index';
+import * as recipes from './v1/recipes';
 
 var router = Router();
 
@@ -26,6 +27,7 @@ router.get('/article/:id/', Catch(async function(req, res, next) {
 router.get('/news/', Catch(news));
 router.get('/news/:site/', Catch(news));
 router.get('/news/:site/:section/', Catch(news));
+router.get('/recipes/', Catch(recipes.index));
 
 async function news(req, res, next) {
   let DEFAULT_LIMIT = 100;

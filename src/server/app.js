@@ -22,6 +22,10 @@ configureViewEngine(app);
 configureRoutes(app, io);
 configureMiddleware(app);
 
+if (app.get('env') == 'development') {
+  app.set('json spaces', 2);
+}
+
 function configureViewEngine(app) {
   app.set('views', path.join(BASE_DIR, 'views'));
   app.set('view engine', 'jade');
