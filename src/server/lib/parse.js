@@ -1,6 +1,7 @@
 'use strict';
 
 import url from 'url';
+import { Sites, Sections } from './constant';
 
 function StripHost(testUrl) {
   /**
@@ -43,7 +44,77 @@ function RemoveExtraSpace(arr) {
   return arr;
 }
 
+/**
+ * Given an array of sites and sections, return a mongo filter for the Articles
+ * collection.
+ *
+ * @memberof parse.js
+ * @param {Array} sites - Sites to filter on
+ * @param {Array} sections - Sections to filter on
+ * @return {Object/undefined} - Filter for mongoose's Articles.find() function, or
+ *  undefined on a failure
+ *
+ */
+function v1NewsMongoFilter(sites=[], sections=[], next=()=> {}) {
+  let siteNames = [for (site of Sites) if (site) StripHost(site)];
+  let mongoFilter = {};
+
+  RemoveExtraSpace(sites);
+  RemoveExtraSpace(sections);
+
+  // Parse the sites params
+  let invalidSites = [];
+  for (let i = 0; i < sites.length; i++) {
+    let site = sites[i];
+    if (siteNames.indexOf(site) == -1 && site != 'all') {
+      invalidSites.push(site)
+    }
+  }
+
+  if (invalidSites.length) {
+    // unprocessable, throw correct response code
+    let sites = invalidSites.join(', ');
+    var err = new Error(`Invalid query argument, site '${sites}' not allowed`);
+    err.status = 422;
+    err.type = 'json';
+    next(err);
+    return;
+  }
+
+  if (sites.length && sites.indexOf('all') == -1) {
+    mongoFilter['source'] = { $in: sites };
+  }
+
+  // Parse the section params
+  let invalidSections = [];
+  for (let i = 0; i < sections.length; i++) {
+    let section = sections[i];
+    if (Sections.indexOf(section) == -1) {
+      invalidSections.push(section);
+    }
+  }
+
+  if (invalidSections.length) {
+    // unprocessable, throw correct response code
+    let sections = invalidSections.join(', ');
+    var err = new Error(`Invalid query argument, section '${sections}' not allowed`);
+    err.status = 422;
+    err.type = 'json';
+    next(err);
+    return;
+  }
+
+  if (sections.length) {
+    mongoFilter['section'] = { $in: sections };
+  }
+
+  return mongoFilter
+}
+
 module.exports = {
   StripHost,
-  RemoveExtraSpace
+  RemoveExtraSpace,
+
+  // v1 stuff
+  v1NewsMongoFilter
 };
