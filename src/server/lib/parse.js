@@ -3,14 +3,14 @@
 import url from 'url';
 import { Sites, Sections } from './constant';
 
+/**
+ * Given a url name (e.g. freep.com), strip out all the extra and just use
+ * the domain name (e.g http://www.freep.com/sports -> freep)
+ *
+ * @param {String} testUrl - url that will be stripped
+ * @returns {String} Host name, or '' if anything goes wrong
+ */
 function StripHost(testUrl) {
-  /**
-   * Given a url name (e.g. freep.com), strip out all the extra and just use
-   * the domain name (e.g http://www.freep.com/sports -> freep)
-   *
-   * @param {String} testUrl - url that will be stripped
-   * @returns {String} Host name, or '' if anything goes wrong
-   */
 
   if (typeof testUrl != 'string') return '';
 
