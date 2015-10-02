@@ -16,6 +16,7 @@ describe('API Routes', function() {
       await connect(testDb);
     } catch (err) {
       done(err);
+      return;
     }
 
     done();
