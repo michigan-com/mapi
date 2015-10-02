@@ -18,7 +18,9 @@ const defaults = {
   }
 };
 
-function connect(dbString=db, options=defaults) {
+function connect(dbString, options=defaults) {
+  if (!dbString) throw new Error('dbString must be defined');
+
   logger(`Connecting to: ${dbString}`);
   return new Promise(function(resolve, reject) {
     mongoose.connect(dbString, options, function(err) {
