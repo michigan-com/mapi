@@ -6,7 +6,6 @@ import assert from 'assert';
 import mocha from 'mocha';
 
 import { app } from '../../app';
-import { testDb } from '../../../config';
 import { v1NewsMongoFilter } from '../../lib/';
 
 describe('API Routes', function() {
