@@ -3,7 +3,7 @@
 import { Router } from 'express';
 
 import v1 from './v1';
-import { Article, Toppages } from '../db';
+import { Article, Toppages, Quickstats } from '../db';
 import { Catch } from '../lib/index';
 import debug from 'debug';
 var logger = debug('app:route');
@@ -24,8 +24,15 @@ router.get('/popular/', Catch(async function(req, res, next) {
   res.json({ success: true });
 }));
 
+router.get('/quickstats/', Catch(async function(req, res, next) {
+  let snapshot = await getQuickstats().exec();
+  req.io.emit('got_quickstats', { snapshot });
+  res.json({ success: true });
+}))
+
 function articles(socket) {
   socket.on('get_articles', Catch(async function(req, res, next) {
+    let filter = req.data || {};
     let articles = await Article.find(req.data).exec();
     socket.emit('got_articles', { articles, filters: req.data });
   }));
@@ -38,8 +45,19 @@ function popular(socket) {
   }));
 }
 
+function quickstats(socket) {
+  socket.on('get_quickstats', Catch(async function() {
+    let snapshot = await getQuickstats().exec();
+    socket.emit('got_quickstats', { snapshot })
+  }));
+}
+
 function getPopular() {
   return Toppages.findOne().sort({ _id: -1 });
 }
 
-module.exports = { index: router, v1, popular, articles };
+function getQuickstats() {
+  return Quickstats.findOne().sort({ _id: -1 });
+}
+
+module.exports = { index: router, v1, popular, articles, quickstats };

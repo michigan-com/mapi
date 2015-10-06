@@ -54,6 +54,7 @@ function configureRoutes(app, io) {
     logger("Connected to SocketIO!");
     routes.popular(socket);
     routes.articles(socket);
+    routes.quickstats(socket);
   });
 }
 
