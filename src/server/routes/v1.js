@@ -27,7 +27,7 @@ router.get('/article/:id/', Catch(async function(req, res, next) {
 router.get('/news/', Catch(news));
 router.get('/news/:site/', Catch(news));
 router.get('/news/:site/:section/', Catch(news));
-router.get('/recipes/', recipes.index);
+router.get('/recipes/', Catch(recipes.index));
 
 async function news(req, res, next) {
   let DEFAULT_LIMIT = 100;

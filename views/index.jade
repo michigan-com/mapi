@@ -28,7 +28,7 @@ block content
         .row.api-input-container
           .col-left
             label Id
-            input(type='text', name='id', class='api-input', value='')
+            input(type='text', name='id', class='api-input', value='0')
           .col-right
             p Unique article id
 
@@ -116,6 +116,26 @@ block content
       div
         hr
         button(data-url='/v1/news/', class='btn animate green') Execute
+
+      .row
+        h4 Response
+        pre.api-response
+
+  article#v1_news.api-endpoint
+    div.api-request
+      h3 GET /v1/recipes
+    div.api-body
+      p.api-info.
+        Grabs the latest recipes from all news sources
+
+      .api-options
+        h4 Options
+        .row.api-input-container
+          include ./limit.jade
+
+      div
+        hr
+        button(data-url='/v1/recipes/', class='btn animate green') Execute
 
       .row
         h4 Response
