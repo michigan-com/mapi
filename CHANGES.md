@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+v0.0.10, 10-08-2015
+-------------------
+
+* Added recipes to api explorer
+* Moved production branch to 'live'
+
 v0.0.9, 09-17-2015
 ------------------
 

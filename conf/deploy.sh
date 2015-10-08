@@ -11,7 +11,7 @@ cd $APP_DIR
 printer "Deploying mapi web app ..."
 
 printer "Grabbing latest source ..."
-git pull origin master
+git pull origin live
 
 printer "Installing node modules ..."
 npm install
