@@ -21,3 +21,6 @@ gulp
 
 printer "Restarting server ..."
 supervisorctl restart mapi
+
+printer "Pushing new tag to github ..."
+git push --tags origin
