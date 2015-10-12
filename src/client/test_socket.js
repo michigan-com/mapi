@@ -21,3 +21,8 @@ socket.on('got_quickstats', function(data) {
   console.log(data);
 });
 
+socket.emit('get_topgeo');
+socket.on('got_topgeo', function(data) {
+  console.log('Got Topgeo');
+  console.log(data);
+});

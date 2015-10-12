@@ -55,6 +55,7 @@ function configureRoutes(app, io) {
     routes.popular(socket);
     routes.articles(socket);
     routes.quickstats(socket);
+    routes.topgeo(socket);
   });
 }
 

@@ -47,6 +47,7 @@ module.exports = {
   Recipe: mongoose.model('Recipe', new Schema({}), 'Recipe'),
   Toppages: mongoose.model('Toppages', new Schema({}), 'Toppages'),
   Quickstats: mongoose.model('Quickstats', new Schema({}), 'Quickstats'),
+  Topgeo: mongoose.model('Topgeo', new Schema({}), 'Topgeo'),
   connect,
   disconnect
 };
