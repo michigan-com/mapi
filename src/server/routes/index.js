@@ -31,7 +31,7 @@ router.get('/quickstats/', Catch(async function(req, res, next) {
 }))
 
 router.get('/topgeo/', Catch(async function(req, res, next) {
-  let snapshot = await getTopgeo.exec();
+  let snapshot = await getTopgeo().exec();
   req.io.emit('got_topgeo', { snapshot });
   res.json({ success: true });
 }))
