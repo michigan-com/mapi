@@ -35,8 +35,12 @@ async function news(req, res, next) {
   let requestedSites = 'site' in req.params ? req.params.site.split(',') : [];
   let requestedSections = 'section' in req.params ? req.params.section.split(',') : [];
   let limit = 'limit' in req.query ? req.query.limit : DEFAULT_LIMIT;
+  // TODO once we have the corresponding changes in the browser extension, uncomment the following line
+  // to start filtering out non-photoed articles
+  //let hasPhoto = 'hasPhoto' in req.query ? true : false;
+  let hasPhoto = true;
 
-  let mongoFilter = v1NewsMongoFilter(requestedSites, requestedSections, next);
+  let mongoFilter = v1NewsMongoFilter(requestedSites, requestedSections, hasPhoto, next);
   if (!mongoFilter) return;
 
   let news;

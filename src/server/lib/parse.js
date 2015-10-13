@@ -51,11 +51,12 @@ function RemoveExtraSpace(arr) {
  * @memberof parse.js
  * @param {Array} sites - Sites to filter on
  * @param {Array} sections - Sections to filter on
+ * @param {Boolean} hasPhoto - if true, only get articles with photos in them. if false, grab all articles
  * @return {Object/undefined} - Filter for mongoose's Articles.find() function, or
  *  undefined on a failure
  *
  */
-function v1NewsMongoFilter(sites=[], sections=[], next=()=> {}) {
+function v1NewsMongoFilter(sites=[], sections=[], hasPhoto=false, next=()=> {}) {
   let siteNames = [for (site of Sites) if (site) StripHost(site)];
   let mongoFilter = {};
 
@@ -106,6 +107,12 @@ function v1NewsMongoFilter(sites=[], sections=[], next=()=> {}) {
 
   if (sections.length) {
     mongoFilter['section'] = { $in: sections };
+  }
+
+  if (hasPhoto) {
+    mongoFilter['photo'] = {
+      $ne: {}
+    }
   }
 
   return mongoFilter

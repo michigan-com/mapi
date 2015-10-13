@@ -56,11 +56,23 @@ describe('API Routes', function() {
       assert.deepEqual(mongoFilter['source'], { $in: sites }, 'mongoFilter["source"] is invalid');
       assert.deepEqual(mongoFilter['section'], { $in:sections }, 'mongoFilter["sections"] is invalid')
     });
+
+    it('/v1/news/freep,detroitnews,langingstatejounral/sports,life/?hasPhoto=true', function() {
+      let sites = ['freep', 'detroitnews', 'lansingstatejournal'];
+      let sections = ['sports', 'life'];
+      let mongoFilter = v1NewsMongoFilter(sites, sections, true);
+
+      assert.equal(Object.keys(mongoFilter).length, 3, 'SHould be two keys in the mongoFilter');
+      assert('source' in mongoFilter && 'section' in mongoFilter && 'photo' in mongoFilter, '"source", "section", and "photo" shoudl be in mongoFilter');
+      assert.deepEqual(mongoFilter['source'], { $in: sites }, 'mongoFilter["source"] is invalid');
+      assert.deepEqual(mongoFilter['section'], { $in:sections }, 'mongoFilter["sections"] is invalid')
+      assert.deepEqual(mongoFilter['photo'], {$ne: {}}, 'mongoFilter["photo"] is invalid')
+    });
   });
 
   describe('Tests invalid mongo filters:', function() {
     function mongoFail(sites=[], sections=[], done) {
-      let mongoFilter = v1NewsMongoFilter(sites, sections, function(err) {
+      let mongoFilter = v1NewsMongoFilter(sites, sections, false, function(err) {
         assert(err.status, 422, 'Should throw 422 error');
         done();
       });
