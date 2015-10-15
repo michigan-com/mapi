@@ -1,0 +1,38 @@
+.snapshot-container {
+  width: 49%;
+  margin-bottom: 30px;
+  display: inline-block;
+
+  .name {
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-size: 25px;
+    line-height: 35px;
+  }
+
+  .updated-at {
+    color: #C1C1C1;
+    font-size: 15px;
+    text-align: center;
+    margin-bottom: 10px;
+
+    &:before {
+      content: 'Last Updated';
+      display: block;
+      text-align: left;
+      font-size: 20px;
+      line-height: 25px;
+    }
+  }
+
+  .blurb {
+    &:before {
+      content: 'Blurb';
+      display: block;
+      text-align: left;
+      font-size: 20px;
+      line-height: 25px;
+    }
+  }
+}

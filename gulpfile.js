@@ -17,7 +17,7 @@ var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
 
 var jsSrc = './src/client/';
-var jsBundle = ['api.js', 'test_socket.js'];
+var jsBundle = ['api.js', 'testSocket.js'];
 
 var testFiles = './dist/tests/**/*.js';
 

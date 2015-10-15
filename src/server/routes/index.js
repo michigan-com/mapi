@@ -14,8 +14,8 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-router.get('/test_socket/', function(req, res, next) {
-  res.render('test_socket');
+router.get('/test-socket/', function(req, res, next) {
+  res.render('test-socket');
 });
 
 router.get('/popular/', Catch(async function(req, res, next) {
