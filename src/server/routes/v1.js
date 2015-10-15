@@ -5,7 +5,7 @@ var logger = debug('app:v1');
 
 import { Router } from 'express';
 
-import { Article } from '../db';
+import { Article, Toppages, Quickstats, Topgeo } from '../db';
 import { Catch, v1NewsMongoFilter } from '../lib/index';
 import * as recipes from './v1/recipes';
 
@@ -23,6 +23,31 @@ router.get('/article/:id/', Catch(async function(req, res, next) {
 
   res.json(article);
 }));
+
+router.get('/snapshot/toppages/', getSnapshot(Toppages));
+router.get('/snapshot/quickstats/', getSnapshot(Quickstats));
+router.get('/snapshot/topgeo/', getSnapshot(Topgeo));
+
+/**
+ * Fetch a Chartbeat Snapshot
+ *
+ * @param {Object} Collection - Mongo Collection representing a snapshot of
+ *    return data from a Chartbeat API. E.g.: Toppages, Quickstats, Topgeo
+ */
+function getSnapshot(Collection) {
+  return Catch(async function(req, res, next) {
+    let snapshot = await Collection.findOne({}).sort({created_at: -1}).exec();
+
+    if (!snapshot) {
+      let err = new Error(`Snapshot not found`);
+      err.status = 404;
+      err.type = 'json';
+      return next(err);
+    }
+
+    res.json(snapshot);
+  });
+}
 
 router.get('/news/', Catch(news));
 router.get('/news/:site/', Catch(news));
