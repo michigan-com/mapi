@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom';
 import moment from 'moment';
 import Velocity from 'velocity-animate';
 
-import $ from 'domtastic';
 let socket = io('https://api.michigan.com', { transports: ['websocket', 'xhr-polling']});
 
 let TIMEFORMAT = 'MMMM Do YYYY hh:mm:ss a';
@@ -26,14 +25,8 @@ class Snapshot extends React.Component {
 
     let color = '#C1C1C1';
     let ref = this.refs['updated-at'];
-    $(ref).css({ color: 'green' });
+    ref.style.color = 'green';
     Velocity(ref, { color }, { delay: 2000, duration: 1000 })
-      .then((elements) => {
-        $(ref).removeClass('updated');
-      });
-
-
-
   }
 
   render() {
