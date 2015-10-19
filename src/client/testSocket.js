@@ -106,6 +106,6 @@ socket.on('got_referrers', function(data) {
       id='referrers'
       createdAt={ moment(snapshot.created_at).format(TIMEFORMAT) }
       blurb={''}/>,
-    document.getElementByID('referrers')
+    document.getElementById('referrers')
   );
 });
