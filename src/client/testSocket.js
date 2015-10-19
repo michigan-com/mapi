@@ -97,3 +97,15 @@ socket.on('got_topgeo', function(data) {
     document.getElementById('topgeo')
   )
 });
+
+socket.emit('get_referrers');
+socket.on('got_referrers', function(data) {
+  let snapshot = data.snapshot;
+  ReactDOM.render(
+    <Snapshot name='Referrers'
+      id='referrers'
+      createdAt={ moment(snapshot.created_at).format(TIMEFORMAT) }
+      blurb={''}/>,
+    document.getElementByID('referrers')
+  );
+});

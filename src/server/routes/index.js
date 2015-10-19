@@ -3,7 +3,7 @@
 import { Router } from 'express';
 
 import v1 from './v1';
-import { Article, Toppages, Quickstats, Topgeo } from '../db';
+import { Article, Toppages, Quickstats, Topgeo, Referrers } from '../db';
 import { Catch } from '../lib/index';
 import debug from 'debug';
 var logger = debug('app:route');
@@ -28,13 +28,19 @@ router.get('/quickstats/', Catch(async function(req, res, next) {
   let snapshot = await getQuickstats().exec();
   req.io.emit('got_quickstats', { snapshot });
   res.json({ success: true });
-}))
+}));
 
 router.get('/topgeo/', Catch(async function(req, res, next) {
   let snapshot = await getTopgeo().exec();
   req.io.emit('got_topgeo', { snapshot });
   res.json({ success: true });
-}))
+}));
+
+router.get('/referrers/', Catch(async function(req, res, next) {
+  let snapshot = await getReferrers().exec();
+  req.ui.emit('got_referrers', { snapshot });
+  res.json({ success: true });
+}));
 
 function articles(socket) {
   socket.on('get_articles', Catch(async function(req, res, next) {
@@ -65,6 +71,13 @@ function topgeo(socket) {
   }));
 }
 
+function referrers(socket) {
+  socket.on('get_referrers', Catch(async function() {
+    let snapshot = await getReferrers().exec();
+    socket.emit('got_referrers', { snapshot });
+  }));
+}
+
 function getPopular() {
   return Toppages.findOne().sort({ _id: -1 });
 }
@@ -77,4 +90,8 @@ function getTopgeo() {
   return Topgeo.findOne().sort({ _id: -1 });
 }
 
-module.exports = { index: router, v1, popular, articles, quickstats, topgeo };
+function getReferrers() {
+  return Referrers.findOne().sort({ _id: -1 });
+}
+
+module.exports = { index: router, v1, popular, articles, quickstats, topgeo, referrers };

@@ -56,6 +56,7 @@ function configureRoutes(app, io) {
     routes.articles(socket);
     routes.quickstats(socket);
     routes.topgeo(socket);
+    routes.referrers(socket);
   });
 }
 

@@ -48,6 +48,7 @@ module.exports = {
   Toppages: mongoose.model('Toppages', new Schema({}), 'Toppages'),
   Quickstats: mongoose.model('Quickstats', new Schema({}), 'Quickstats'),
   Topgeo: mongoose.model('Topgeo', new Schema({}), 'Topgeo'),
+  Referrers: mongoose.model('Referrers', new Schema({}), 'Referrers'),
   connect,
   disconnect
 };
