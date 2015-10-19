@@ -38,7 +38,7 @@ router.get('/topgeo/', Catch(async function(req, res, next) {
 
 router.get('/referrers/', Catch(async function(req, res, next) {
   let snapshot = await getReferrers().exec();
-  req.ui.emit('got_referrers', { snapshot });
+  req.io.emit('got_referrers', { snapshot });
   res.json({ success: true });
 }));
 
