@@ -34,8 +34,7 @@ export async function mark(req, res, next) {
   let filter = { _id: db.ObjectId(recipeId) };
   let changes = { $set: { [mark]: value } };
 
-  debug('mark: %j', { recipeId, mark, value, filter, changes });
-  debug('body = %j (%s) %j', req.body, typeof(req.body), req.body.value);
+  debug('mark: %j', { recipeId, mark, value, filter, changes, body: req.body, bodyType: typeof(req.body) });
 
   let result = await db.recipes.updateOne(filter, changes, { safe: db.safe });
   db.verifyUpdateResult(result, 'Recipe not found', 'Recipe update failed');
