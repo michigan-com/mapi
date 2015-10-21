@@ -10,7 +10,7 @@ import { db } from '../config';
 
 mongoose.connection.on('error', logger);
 
-connect(process.env.MAPI_DB || db).catch(function(err) {
+connect(process.env.MAPI_DB || db).then(startListening).catch(function(err) {
   throw err;
 });
 
@@ -23,12 +23,15 @@ server.on('close', function() {
 });
 
 logger(`Environment: ${app.get('env')}`);
-server.listen(port, '0.0.0.0', function(err) {
-  if (err) throw new Error(err);
 
-  let host = this.address();
-  logger(`Started on ${host.address}:${host.port}`);
-});
+function startListening() {
+  server.listen(port, '0.0.0.0', function(err) {
+    if (err) throw new Error(err);
+
+    let host = this.address();
+    logger(`Started on ${host.address}:${host.port}`);
+  });
+}
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
