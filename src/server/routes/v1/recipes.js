@@ -59,7 +59,6 @@ function sanitizeMark(mark) {
 }
 
 function sanitizeMarkValue(value) {
-  console.log('sanitizeMarkValue %j', value);
   if (!(value === 0 || value === 1)) {
     var err = new Error('Invalid mark value');
     err.status = 500;
