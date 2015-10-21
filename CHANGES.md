@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+v0.0.11, 10-21-2015
+-------------------
+
+* Replaced MAPI\_DB with MONGO\_URI
+* Remove 'db' from config.js
+* Added new gulp taks
+
 v0.0.10, 10-08-2015
 -------------------
 
