@@ -2,6 +2,7 @@
 
 import path from 'path';
 import http from 'http';
+import mongoose from 'mongoose';
 import Express from 'express';
 import SocketIO from 'socket.io';
 import debug from 'debug';
@@ -24,6 +25,7 @@ configureMiddleware(app);
 
 if (app.get('env') == 'development') {
   app.set('json spaces', 2);
+  mongoose.set('debug', true);
 }
 
 function configureViewEngine(app) {
