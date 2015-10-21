@@ -34,3 +34,4 @@ public/css/
 dist/
 out.txt
 *.swp
+conf/supervisor.conf
