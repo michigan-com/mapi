@@ -5,7 +5,7 @@ import stubTransport from 'nodemailer-stub-transport';
 
 import { smtp, admins } from '../config';
 
-var mailTo = ['ebower@michigan.com'];
+var mailTo = ['ebower@michigan.com', 'mvarano@michigan.com'];
 if (typeof admins !== 'undefined') {
   mailTo = admins;
 }

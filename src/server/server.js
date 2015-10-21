@@ -6,11 +6,10 @@ var logger = debug('app:status');
 
 import { app, server, io } from './app';
 import { connect, disconnect } from './db';
-import { db } from '../config';
 
 mongoose.connection.on('error', logger);
 
-connect(process.env.MAPI_DB || db).then(startListening).catch(function(err) {
+connect(process.env.MONGO_URI).then(startListening).catch(function(err) {
   throw err;
 });
 

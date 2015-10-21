@@ -52,6 +52,7 @@ DEBUG=* node ./dist/app.js
 ```
 
 ## Environmental Variables
+* MONGO_URI, mongodb uri
 * NODE_ENV, 'production' or 'development', default development
 * NODE_PORT, the port number to run the server over, default 3000
 * LOG_REQUEST, will log all HTTP requests regardless of NODE_ENV

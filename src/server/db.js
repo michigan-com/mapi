@@ -4,17 +4,10 @@ import mongoose from 'mongoose';
 import debug from 'debug';
 var logger = debug('app:db');
 
-import { db } from '../config';
-
 export let ObjectId = mongoose.mongo.ObjectId;
 export const safe = { w: 'majority' };
 
 export let recipes = null;
-
-
-if (typeof db === 'undefined') {
-  throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
-}
 
 var Schema = mongoose.Schema;
 
