@@ -20,8 +20,8 @@ var server = http.Server(app);
 var io = SocketIO(server);
 
 configureViewEngine(app);
-configureRoutes(app, io);
 configureMiddleware(app);
+configureRoutes(app, io);
 
 if (app.get('env') == 'development') {
   app.set('json spaces', 2);
