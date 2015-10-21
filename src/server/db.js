@@ -8,6 +8,7 @@ import { db } from '../config';
 
 export let mdb = {};
 export let ObjectId = mongoose.mongo.ObjectId;
+export const safe = { w: 'majority' };
 
 
 if (typeof db === 'undefined') {
@@ -57,4 +58,22 @@ export function disconnect() {
 
 function setupCollections() {
   mdb.recipes = Recipe.collection;
+}
+
+export function verifyUpdateResult(result, message404, message500) {
+  if (result.result.ok !== 1) {
+    console.error('Mongo update result (!ok): %j %s', result, require('util').inspect(result));
+    let err = new Error(message500 || 'Update failed');
+    err.status = 500;
+    err.type = 'json';
+    throw err;
+  }
+  if (result.matchedCount === 0) {
+    console.error('Mongo update result (n=0): %j', result);
+    let err = new Error(message404 || 'Not found');
+    err.status = 404;
+    err.type = 'json';
+    throw err;
+  }
+  return result;
 }

@@ -1,4 +1,5 @@
 import { mdb, ObjectId } from '../../db';
+import * as db from '../../db';
 let debug = require('debug')('app:recipes');
 
 export async function index(req, res, next) {
@@ -7,13 +8,15 @@ export async function index(req, res, next) {
 
   let mongoFilter = {};
 
+  addMarkFilter(mongoFilter, 'flagged', req.query.flagged);
+  addMarkFilter(mongoFilter, 'verified', req.query.verified);
+
   try {
     let query = mdb.recipes.find(mongoFilter).sort({ _id: -1 });
     if (limit > 0) {
       query.limit(limit);
     }
     let items = await query.toArray();
-    console.error('items = %s', require('util').inspect(items));
     res.json({ recipes: items });
   } catch(err) {
     var err = new Error(err);
@@ -34,18 +37,16 @@ export async function mark(req, res, next) {
 
   debug('mark: %j', { recipeId, mark, value, filter, changes });
 
-  let result = await mdb.recipes.updateOne(filter, changes, { safe: 'majority' });
-  res.json({ result: result, value: value });
+  let result = await mdb.recipes.updateOne(filter, changes, { safe: db.safe });
+  db.verifyUpdateResult(result, 'Recipe not found', 'Recipe update failed');
+  res.json({ value: value });
+}
 
-  // try {
-  //   let result = await Recipe.update(filter, changes).exec();
-  //   res.json({ result: result, value: value });
-  // } catch(err) {
-  //   var err = new Error(err);
-  //   err.status = 500;
-  //   err.type = 'json';
-  //   return next(err);
-  // }
+function addMarkFilter(filter, mark, param) {
+  if (typeof(param) === 'string') {
+    let isSet = !(param === '0');
+    filter[mark] = (isSet ? 1 : {'$in': [0, null]});
+  }
 }
 
 function sanitizeMark(mark) {
