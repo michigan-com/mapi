@@ -1,4 +1,3 @@
-import { mdb, ObjectId } from '../../db';
 import * as db from '../../db';
 let debug = require('debug')('app:recipes');
 
@@ -12,7 +11,7 @@ export async function index(req, res, next) {
   addMarkFilter(mongoFilter, 'verified', req.query.verified);
 
   try {
-    let query = mdb.recipes.find(mongoFilter).sort({ _id: -1 });
+    let query = db.recipes.find(mongoFilter).sort({ _id: -1 });
     if (limit > 0) {
       query.limit(limit);
     }
@@ -32,12 +31,12 @@ export async function mark(req, res, next) {
   let mark = sanitizeMark(req.params.mark);
   let value = 1;
 
-  let filter = { _id: ObjectId(recipeId) };
+  let filter = { _id: db.ObjectId(recipeId) };
   let changes = { $set: { [mark]: value } };
 
   debug('mark: %j', { recipeId, mark, value, filter, changes });
 
-  let result = await mdb.recipes.updateOne(filter, changes, { safe: db.safe });
+  let result = await db.recipes.updateOne(filter, changes, { safe: db.safe });
   db.verifyUpdateResult(result, 'Recipe not found', 'Recipe update failed');
   res.json({ value: value });
 }

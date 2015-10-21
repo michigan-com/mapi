@@ -6,9 +6,10 @@ var logger = debug('app:db');
 
 import { db } from '../config';
 
-export let mdb = {};
 export let ObjectId = mongoose.mongo.ObjectId;
 export const safe = { w: 'majority' };
+
+export let recipes = null;
 
 
 if (typeof db === 'undefined') {
@@ -57,7 +58,7 @@ export function disconnect() {
 }
 
 function setupCollections() {
-  mdb.recipes = Recipe.collection;
+  recipes = Recipe.collection;
 }
 
 export function verifyUpdateResult(result, message404, message500) {
