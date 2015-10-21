@@ -29,12 +29,13 @@ export async function mark(req, res, next) {
   let recipeId = req.params.recipeId;
 
   let mark = sanitizeMark(req.params.mark);
-  let value = 1;
+  let value = sanitizeMarkValue((req.body && typeof(req.body.value) !== 'undefined') ? req.body.value : 1);
 
   let filter = { _id: db.ObjectId(recipeId) };
   let changes = { $set: { [mark]: value } };
 
   debug('mark: %j', { recipeId, mark, value, filter, changes });
+  debug('body = %j (%s) %j', req.body, typeof(req.body), req.body.value);
 
   let result = await db.recipes.updateOne(filter, changes, { safe: db.safe });
   db.verifyUpdateResult(result, 'Recipe not found', 'Recipe update failed');
@@ -56,4 +57,15 @@ function sanitizeMark(mark) {
     throw err;
   }
   return mark;
+}
+
+function sanitizeMarkValue(value) {
+  console.log('sanitizeMarkValue %j', value);
+  if (!(value === 0 || value === 1)) {
+    var err = new Error('Invalid mark value');
+    err.status = 500;
+    err.type = 'json';
+    throw err;
+  }
+  return value;
 }
