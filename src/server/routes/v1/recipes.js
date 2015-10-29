@@ -123,7 +123,7 @@ function recipeToText(recipe) {
   }
 
   if (recipe.nutrition) {
-    lines.push("NUTRICION: \(recipe.nutrition.text)")
+    lines.push(`NUTRICION: ${recipe.nutrition.text}`)
   }
 
   return lines
