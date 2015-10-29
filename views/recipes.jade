@@ -14,7 +14,7 @@ block content
     article.api-endpoint(style="clear: both")
       div.api-request
         h3
-          a(href=recipe.url, target="_blank")= recipe.title
+          a(href=recipe.url, target="_blank") #{recipe.title} (#{recipe.ordinal} of #{total})
 
       if recipe.photoUrl
         a(href=recipe.photoUrl, target="_blank")

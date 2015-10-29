@@ -19,13 +19,15 @@ export async function index(req, res, next) {
 
     let fmt = req.params.format || req.accepts('json', 'html');
     if (fmt === "html") {
+      let ordinal = 1
       items.forEach((recipe) => {
+        recipe.ordinal = ordinal++;
         recipe.lines = recipeToText(recipe);
 
         let photo = recipe.photo && (recipe.photo.full || recipe.photo.small);
         recipe.photoUrl = (photo && photo.url);
       })
-      res.render('recipes', { recipes: items });
+      res.render('recipes', { recipes: items, total: items.length });
     } else if (fmt === "json") {
       res.json({ recipes: items });
     } else {
@@ -96,10 +98,10 @@ function recipeToText(recipe) {
     claims.push(`Serving size: ${recipe.serving_size}.`)
   }
   if (recipe.prep_time) {
-    claims.push(`Preparation size: ${recipe.prep_time.text}.`)
+    claims.push(`Preparation time: ${recipe.prep_time.text}.`)
   }
   if (recipe.total_time) {
-    claims.push(`Total size: ${recipe.total_time.text}.`)
+    claims.push(`Total time: ${recipe.total_time.text}.`)
   }
 
   let lines = []
