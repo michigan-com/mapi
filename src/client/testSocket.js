@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import moment from 'moment';
 import Velocity from 'velocity-animate';
 
-let socket = io('https://api.michigan.com', { transports: ['websocket', 'xhr-polling']});
+let socket = io('', { transports: ['websocket', 'xhr-polling']});
 
 let TIMEFORMAT = 'MMMM Do YYYY hh:mm:ss a';
 

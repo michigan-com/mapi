@@ -38,7 +38,6 @@
     "pkgify": "^1.0.3",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
-    "reactify": "^1.1.1",
     "request": "^2.55.0",
     "require-dir": "^0.3.0",
     "serve-favicon": "~2.2.0",

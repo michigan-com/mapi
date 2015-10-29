@@ -3,12 +3,14 @@
 import { Router } from 'express';
 
 import v1 from './v1';
-import { Article, Toppages, Quickstats, Topgeo, Referrers } from '../db';
+import { Toppages, Quickstats, Topgeo, Referrers, Recent } from '../db';
 import { Catch } from '../lib/index';
 import debug from 'debug';
 var logger = debug('app:route');
 
 var router = Router();
+export { router as router };
+export { v1 as v1 };
 
 router.get('/', function(req, res, next) {
   res.render('index');
@@ -19,79 +21,36 @@ router.get('/test-socket/', function(req, res, next) {
 });
 
 router.get('/popular/', Catch(async function(req, res, next) {
-  let snapshot = await getPopular().exec();
+  let snapshot = await getSnapshot(Toppages).exec();
   req.io.emit('got_popular', { snapshot });
   res.json({ success: true });
 }));
 
 router.get('/quickstats/', Catch(async function(req, res, next) {
-  let snapshot = await getQuickstats().exec();
+  let snapshot = await getSnapshot(Quickstats).exec();
   req.io.emit('got_quickstats', { snapshot });
   res.json({ success: true });
 }));
 
 router.get('/topgeo/', Catch(async function(req, res, next) {
-  let snapshot = await getTopgeo().exec();
+  let snapshot = await getSnapshot(Topgeo).exec();
   req.io.emit('got_topgeo', { snapshot });
   res.json({ success: true });
 }));
 
 router.get('/referrers/', Catch(async function(req, res, next) {
-  let snapshot = await getReferrers().exec();
+  let snapshot = await getSnapshot(Referrers).exec();
   req.io.emit('got_referrers', { snapshot });
   res.json({ success: true });
 }));
 
-function articles(socket) {
-  socket.on('get_articles', Catch(async function(req, res, next) {
-    let filter = req.data || {};
-    let articles = await Article.find(req.data).exec();
-    socket.emit('got_articles', { articles, filters: req.data });
-  }));
-}
+router.get('/recent/', Catch(async function(req, res, next) {
+  let snapshot = await getSnapshot(Recent).exec();
+  req.io.emit('got_recent', { snapshot });
+  res.json({ success: true });
+}));
 
-function popular(socket) {
-  socket.on('get_popular', Catch(async function() {
-    let snapshot = await getPopular().exec();
-    socket.emit('got_popular', { snapshot });
-  }));
+// Getter functions for Chartbeat snapshots
+function getSnapshot(model) {
+  return model.findOne().sort({ _id: -1 })
 }
-
-function quickstats(socket) {
-  socket.on('get_quickstats', Catch(async function() {
-    let snapshot = await getQuickstats().exec();
-    socket.emit('got_quickstats', { snapshot })
-  }));
-}
-
-function topgeo(socket) {
-  socket.on('get_topgeo', Catch(async function() {
-    let snapshot = await getTopgeo().exec();
-    socket.emit('got_topgeo', { snapshot });
-  }));
-}
-
-function referrers(socket) {
-  socket.on('get_referrers', Catch(async function() {
-    let snapshot = await getReferrers().exec();
-    socket.emit('got_referrers', { snapshot });
-  }));
-}
-
-function getPopular() {
-  return Toppages.findOne().sort({ _id: -1 });
-}
-
-function getQuickstats() {
-  return Quickstats.findOne().sort({ _id: -1 });
-}
-
-function getTopgeo() {
-  return Topgeo.findOne().sort({ _id: -1 });
-}
-
-function getReferrers() {
-  return Referrers.findOne().sort({ _id: -1 });
-}
-
-module.exports = { index: router, v1, popular, articles, quickstats, topgeo, referrers };
