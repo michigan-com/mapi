@@ -18,7 +18,7 @@ var jsFiles = jsSrc + '**/*.js';
 /**
  * DEFINE ALL CLIENT JS FILES HERE BY FILENAME
  */
-var jsBundle = ['api.js', 'testSocket.js'];
+var jsBundle = ['api.js'];
 
 /**
  * Gulp task

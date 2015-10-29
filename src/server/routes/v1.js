@@ -5,7 +5,7 @@ var logger = debug('app:v1');
 
 import { Router } from 'express';
 
-import { Article, Toppages, Quickstats, Topgeo } from '../db';
+import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent } from '../db';
 import { Catch, v1NewsMongoFilter } from '../lib/index';
 import * as recipes from './v1/recipes';
 
@@ -27,6 +27,8 @@ router.get('/article/:id/', Catch(async function(req, res, next) {
 router.get('/snapshot/toppages/', getSnapshot(Toppages));
 router.get('/snapshot/quickstats/', getSnapshot(Quickstats));
 router.get('/snapshot/topgeo/', getSnapshot(Topgeo));
+router.get('/snapshot/referrals/', getSnapshot(Referrers));
+router.get('/snapshot/recent/', getSnapshot(Recent));
 
 /**
  * Fetch a Chartbeat Snapshot

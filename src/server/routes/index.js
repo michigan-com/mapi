@@ -16,10 +16,6 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-router.get('/test-socket/', function(req, res, next) {
-  res.render('test-socket');
-});
-
 router.get('/popular/', Catch(async function(req, res, next) {
   let snapshot = await getSnapshot(Toppages).exec();
   req.io.emit('got_popular', { snapshot });
