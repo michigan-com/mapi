@@ -1,0 +1,26 @@
+extends layout
+
+block title
+  title Recipes
+
+block css
+  link(href='css/api.css', rel='stylesheet')
+
+block content
+  .page-header
+    h1 Recipes
+
+  each recipe in recipes
+    article.api-endpoint(style="clear: both")
+      div.api-request
+        h3
+          a(href=recipe.url, target="_blank")= recipe.title
+
+      if recipe.photoUrl
+        a(href=recipe.photoUrl, target="_blank")
+          img(src=recipe.photoUrl, alt="", style="float: right; max-width: 50%")
+
+      each line in recipe.lines
+        p= line
+
+      hr

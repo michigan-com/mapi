@@ -54,6 +54,7 @@ router.get('/news/:site/', Catch(news));
 router.get('/news/:site/:section/', Catch(news));
 
 router.get('/recipes/', Catch(recipes.index));
+router.get('/recipes.:format', Catch(recipes.index));
 router.put('/recipes/:recipeId/marks/:mark/', Catch(recipes.mark));
 
 async function news(req, res, next) {

@@ -16,7 +16,21 @@ export async function index(req, res, next) {
       query.limit(limit);
     }
     let items = await query.toArray();
-    res.json({ recipes: items });
+
+    let fmt = req.params.format || req.accepts('json', 'html');
+    if (fmt === "html") {
+      items.forEach((recipe) => {
+        recipe.lines = recipeToText(recipe);
+
+        let photo = recipe.photo && (recipe.photo.full || recipe.photo.small);
+        recipe.photoUrl = (photo && photo.url);
+      })
+      res.render('recipes', { recipes: items });
+    } else if (fmt === "json") {
+      res.json({ recipes: items });
+    } else {
+      res.status(406).end();
+    }
   } catch(err) {
     var err = new Error(err);
     err.status = 500;
@@ -66,4 +80,51 @@ function sanitizeMarkValue(value) {
     throw err;
   }
   return value;
+}
+
+function recipeToText(recipe) {
+  let tags = [];
+  if (recipe.flagged) {
+    tags.push("#flagged")
+  }
+  if (recipe.verified) {
+    tags.push("#verified")
+  }
+
+  let claims = [];
+  if (recipe.serving_size) {
+    claims.push(`Serving size: ${recipe.serving_size}.`)
+  }
+  if (recipe.prep_time) {
+    claims.push(`Preparation size: ${recipe.prep_time.text}.`)
+  }
+  if (recipe.total_time) {
+    claims.push(`Total size: ${recipe.total_time.text}.`)
+  }
+
+  let lines = []
+
+  if (tags.length > 0) {
+    lines.push(tags.join(" "));
+  }
+  if (claims.length > 0) {
+    lines.push(claims.join(" "));
+  }
+
+  lines.push("INGREDIENTS:");
+  for (let item of recipe.ingredients || []) {
+    lines.push(`• ${item.text}`)
+    
+  }
+
+  lines.push("DIRECTIONS:");
+  for (let item of recipe.instructions || []) {
+    lines.push(`${item.text}`)
+  }
+
+  if (recipe.nutrition) {
+    lines.push("NUTRICION: \(recipe.nutrition.text)")
+  }
+
+  return lines
 }
