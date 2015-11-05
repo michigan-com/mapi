@@ -29,10 +29,10 @@ summary {
 
 a {
   background-color: transparent;
-  &:active,
-  &:hover {
-    outline: 0;
-  }
+}
+
+a:active, a:hover {
+  outline: 0;
 }
 
 b,
@@ -76,14 +76,16 @@ p {
 .row {
   overflow: auto;
   width: 100%;
-  .col-left {
-    float: left;
-    width: 50%;
-  }
-  .col-right {
-    float: right;
-    width: 50%;
-  }
+}
+
+.row .col-left {
+  float: left;
+  width: 50%;
+}
+
+.row .col-right {
+  float: right;
+  width: 50%;
 }
 
 .page-header {
@@ -92,9 +94,10 @@ p {
   margin-left: 0px;
   margin-right: 0px;
   margin-top: 40px;
-  a {
-    margin: 0 10px;
-  }
+}
+
+.page-header a {
+  margin: 0 10px;
 }
 
 .animate {
@@ -111,12 +114,12 @@ p {
   font-size: 16px;
   color: #FFF;
   text-decoration: none;
+}
 
-  &:active {
-    transform: translate(0px,5px);
-    -webkit-transform: translate(0px,5px);
-    border-bottom: 1px solid;
-  }
+.btn:active {
+  transform: translate(0px,5px);
+  -webkit-transform: translate(0px,5px);
+  border-bottom: 1px solid;
 }
 
 .blue {
@@ -150,12 +153,7 @@ p {
     padding: 0 7px;
   }
 
-  .row {
-    .col-left {
-      width: 100%;
-    }
-    .col-right {
-      width: 100%;
-    }
+  .row .col-left, .col-right {
+    width: 100%;
   }
 }

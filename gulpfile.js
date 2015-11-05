@@ -7,7 +7,7 @@ var requireDir = require('require-dir');
 var dir = requireDir('./tasks', { recurse: true });
 
 // Default task
-gulp.task('default', ['sass', 'babel', 'browserify']);
+gulp.task('default', ['babel', 'browserify']);
 
 gulp.task('mocha', function(done) {
   var testFiles = './dist/tests/**/*.js';

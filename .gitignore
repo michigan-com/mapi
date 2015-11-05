@@ -30,7 +30,6 @@ node_modules
 config.js
 public/bower/
 public/js/
-public/css/
 dist/
 out.txt
 *.swp
