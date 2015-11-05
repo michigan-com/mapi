@@ -3,7 +3,7 @@
 import { Router } from 'express';
 
 import v1 from './v1';
-import { Toppages, Quickstats, Topgeo, Referrers, Recent } from '../db';
+import { Toppages, Quickstats, Topgeo, Referrers, Recent, HistoricalTraffic } from '../db';
 import { Catch } from '../lib/index';
 import debug from 'debug';
 var logger = debug('app:route');
@@ -45,6 +45,13 @@ router.get('/recent/', Catch(async function(req, res, next) {
   req.io.emit('got_recent', { snapshot });
   res.json({ success: true });
 }));
+
+router.get('/historical-traffic/', Catch(async function(req, res, next) {
+  let snapshot = await getSnapshot(HistoricalTraffic).exec();
+  req.io.emit('got_historical_traffic', { snapshot });
+  res.json({ success: true });
+}));
+
 
 // Getter functions for Chartbeat snapshots
 function getSnapshot(model) {

@@ -18,6 +18,7 @@ export let Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats
 export let Topgeo = mongoose.model('Topgeo', new Schema({}), 'Topgeo');
 export let Referrers = mongoose.model('Referrers', new Schema({}), 'Referrers');
 export let Recent = mongoose.model('Recent', new Schema({}), 'Recent');
+export let HistoricalTraffic = mongoose.model('HistoricalTraffic', new Schema({}), 'HistoricalTraffic');
 
 const defaults = {
   server: {

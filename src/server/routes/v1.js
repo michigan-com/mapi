@@ -5,30 +5,33 @@ var logger = debug('app:v1');
 
 import { Router } from 'express';
 
-import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent } from '../db';
+import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, HistoricalTraffic } from '../db';
 import { Catch, v1NewsMongoFilter } from '../lib/index';
 import * as recipes from './v1/recipes';
 
 var router = Router();
 
-router.get('/article/:id/', Catch(async function(req, res, next) {
-  let article = await Article.findOne({ article_id: parseInt(req.params.id) }).exec();
+router.get('/article/:id/', async function(req, res, next) {
+  let article = await Article.findOne({
+    article_id: parseInt(req.params.id)
+  }).exec();
 
   if (!article) {
-    var err = new Error(`Could not find article with id ${req.params.id}`);
+    let err = new Error(`Could not find article with id ${req.params.id}`);
     err.status = 404;
     err.type = 'json';
     return next(err);
   }
 
   res.json(article);
-}));
+});
 
 router.get('/snapshot/toppages/', getSnapshot(Toppages));
 router.get('/snapshot/quickstats/', getSnapshot(Quickstats));
 router.get('/snapshot/topgeo/', getSnapshot(Topgeo));
 router.get('/snapshot/referrals/', getSnapshot(Referrers));
 router.get('/snapshot/recent/', getSnapshot(Recent));
+router.get('/snapshot/historical-traffic/', getSnapshot(HistoricalTraffic));
 
 /**
  * Fetch a Chartbeat Snapshot
