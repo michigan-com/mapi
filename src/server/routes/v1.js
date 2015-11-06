@@ -5,7 +5,7 @@ var logger = debug('app:v1');
 
 import { Router } from 'express';
 
-import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, HistoricalTraffic } from '../db';
+import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries } from '../db';
 import { Catch, v1NewsMongoFilter } from '../lib/index';
 import * as recipes from './v1/recipes';
 
@@ -31,7 +31,7 @@ router.get('/snapshot/quickstats/', getSnapshot(Quickstats));
 router.get('/snapshot/topgeo/', getSnapshot(Topgeo));
 router.get('/snapshot/referrals/', getSnapshot(Referrers));
 router.get('/snapshot/recent/', getSnapshot(Recent));
-router.get('/snapshot/historical-traffic/', getSnapshot(HistoricalTraffic));
+router.get('/snapshot/traffic-series/', getSnapshot(TrafficSeries));
 
 /**
  * Fetch a Chartbeat Snapshot

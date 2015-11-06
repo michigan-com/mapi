@@ -1,7 +1,7 @@
 'use strict';
 
 import { Catch } from '../lib';
-import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, HistoricalTraffic } from '../db';
+import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries } from '../db';
 
 export function articles(socket) {
   socket.on('get_articles', Catch(async function(req, res, next) {
@@ -46,10 +46,10 @@ export function recent(socket) {
   }));
 }
 
-export function historicalTraffic(socket) {
-  socket.on('get_historical_traffic', Catch(async function() {
-    let snapshot = await getSnapshot(HistoricalTraffic).exec();
-    socket.emit('got_historical_traffic', { snapshot });
+export function trafficSeries(socket) {
+  socket.on('get_traffic_series', Catch(async function() {
+    let snapshot = await getSnapshot(TrafficSeries).exec();
+    socket.emit('got_traffic_series', { snapshot });
   }));
 }
 

@@ -3,7 +3,7 @@
 import { Router } from 'express';
 
 import v1 from './v1';
-import { Toppages, Quickstats, Topgeo, Referrers, Recent, HistoricalTraffic } from '../db';
+import { Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries } from '../db';
 import { Catch } from '../lib/index';
 import debug from 'debug';
 var logger = debug('app:route');
@@ -46,9 +46,9 @@ router.get('/recent/', Catch(async function(req, res, next) {
   res.json({ success: true });
 }));
 
-router.get('/historical-traffic/', Catch(async function(req, res, next) {
-  let snapshot = await getSnapshot(HistoricalTraffic).exec();
-  req.io.emit('got_historical_traffic', { snapshot });
+router.get('/traffic-series/', Catch(async function(req, res, next) {
+  let snapshot = await getSnapshot(TrafficSeries).exec();
+  req.io.emit('got_traffic_series', { snapshot });
   res.json({ success: true });
 }));
 
