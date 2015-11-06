@@ -59,7 +59,7 @@ function configureRoutes(app, io) {
     sockets.topgeo(socket);
     sockets.referrers(socket);
     sockets.recent(socket);
-    socket.trafficSeries(socket);
+    sockets.trafficSeries(socket);
   });
 }
 
