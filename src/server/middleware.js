@@ -5,7 +5,6 @@ import morgan from 'morgan';
 import express from 'express';
 import favicon from 'serve-favicon';
 import bodyParser from 'body-parser';
-import errorhandler from 'errorhandler';
 import cookieParser from 'cookie-parser';
 import debug from 'debug';
 
@@ -20,7 +19,6 @@ export default function configureMiddleware(app) {
 
   if (env === 'development' || env === 'testing') {
     app.use(morgan('dev'));
-    // app.use(errorhandler());
   } else if (process.env.LOG_REQUEST) {
     app.use(morgan('combined'));
   }
