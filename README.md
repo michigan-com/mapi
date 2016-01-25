@@ -48,7 +48,7 @@ gulp
 ```bash
 DEBUG=* npm start
 # or
-DEBUG=* node ./dist/app.js
+DEBUG=* node ./dist/server.js
 ```
 
 ## Environmental Variables
