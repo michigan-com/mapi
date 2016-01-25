@@ -27,6 +27,7 @@ router.get('/article/:id/', async function(req, res, next) {
 });
 
 router.get('/snapshot/toppages/', getSnapshot(Toppages));
+router.get('/snapshot/toppages/history', fetchHistoricalSnapshots(Toppages));
 router.get('/snapshot/quickstats/', getSnapshot(Quickstats));
 router.get('/snapshot/topgeo/', getSnapshot(Topgeo));
 router.get('/snapshot/referrals/', getSnapshot(Referrers));
@@ -51,6 +52,22 @@ function getSnapshot(Collection) {
     }
 
     res.json(snapshot);
+  });
+}
+
+/**
+ * Fetch the most recent Chartbeat snapshots (up to a given limit).
+ *
+ * @param {Object} Collection - Mongo Collection representing a snapshot of
+ *    return data from a Chartbeat API. E.g.: Toppages, Quickstats, Topgeo
+ */
+function fetchHistoricalSnapshots(Collection) {
+  return Catch(async function(req, res, next) {
+    let limit = ('limit' in req.query ? req.query.limit : 20)
+
+    let snapshots = await Collection.find({}).sort({created_at: -1}).limit(limit).exec();
+
+    res.json(snapshots);
   });
 }
 
