@@ -9,7 +9,7 @@ import { connect, disconnect } from './db';
 
 mongoose.connection.on('error', logger);
 
-connect(process.env.MONGO_URI).then(startListening).catch(function(err) {
+connect(process.env.MONGO_URI || 'localhost/mapi').then(startListening).catch(function(err) {
   throw err;
 });
 
@@ -38,4 +38,3 @@ function normalizePort(val) {
   if (port >= 0) return port;
   return false;
 }
-
