@@ -3,7 +3,7 @@
 import { Router } from 'express';
 
 import v1 from './v1';
-import { Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries, History } from '../db';
+import { Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries } from '../db';
 import { Catch } from '../lib/index';
 import debug from 'debug';
 var logger = debug('app:route');
@@ -15,13 +15,6 @@ export { v1 as v1 };
 router.get('/', function(req, res, next) {
   res.render('index');
 });
-
-router.get('/history', Catch(async function(req, res) {
-  var starting = new Date();
-  starting.setDate(starting.getDate() - (req.query.startingDaysAgo || 7));
-  let history = await History.find({timestamp: {$gt: starting}}).sort({ timestamp: -1 }).exec()
-  res.send(history)
-}));
 
 router.get('/popular/', Catch(async function(req, res, next) {
   let snapshot = await getSnapshot(Toppages).exec();

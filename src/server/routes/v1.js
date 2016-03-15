@@ -5,7 +5,7 @@ var logger = debug('app:v1');
 
 import { Router } from 'express';
 
-import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries } from '../db';
+import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries, History } from '../db';
 import { Catch, v1NewsMongoFilter } from '../lib/index';
 import * as recipes from './v1/recipes';
 
@@ -25,6 +25,13 @@ router.get('/article/:id/', async function(req, res, next) {
 
   res.json(article);
 });
+
+router.get('/history/', Catch(async function(req, res) {
+  var starting = new Date();
+  starting.setDate(starting.getDate() - (req.query.startingDaysAgo || 7));
+  let history = await History.find({timestamp: {$gt: starting}}).sort({ timestamp: -1 }).exec()
+  res.json({ history })
+}));
 
 router.get('/snapshot/toppages/', getSnapshot(Toppages));
 router.get('/snapshot/toppages/history', fetchHistoricalSnapshots(Toppages));

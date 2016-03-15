@@ -58,9 +58,9 @@ export default function configureMiddleware(app) {
     -----
     Stacktrace: ${err.stack}`;
 
-    mail.transporter.sendMail(mail.mailOptions, function(error, info) {
-      if (error) errLogger.error(error);
-      if (mail.type == 'stub') errLogger.info(info.response.toString());
+    mail.transporter.sendMail(mail.mailOptions, (error, info) => {
+      if (error) errLogger(error);
+      if (mail.type == 'stub') errLogger(info.response.toString());
     });
   });
 }
