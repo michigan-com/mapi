@@ -141,6 +141,30 @@ block content
         h4 Response
         pre.api-response
 
+  article#v1-history.api-endpoint
+    div.api-request
+      h3 GET /v1/history/
+    div.api-body
+      p.api-info.
+        Grabs historical data
+
+      .query-params
+        h4 Optional
+        .row.api-input-container
+          .col-left
+            label Starting Days Ago
+            input(type='text', id='startingDaysAgo', name='startingDaysAgo', class='api-input-query-param', value='7')
+          .col-right
+            p How many days in the past to query for data (default=7)
+
+      div
+        hr
+        button(data-url='/v1/history/', class='btn animate green') Execute
+
+      .row
+        h4 Response
+        pre.api-response
+
   article#v1-snapshot-toppages.api-endpoint
     div.api-request
       h3 GET /v1/snapshot/toppages/
@@ -245,4 +269,3 @@ block content
       .row
         h4 Response
         pre.api-response
-

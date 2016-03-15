@@ -43,13 +43,24 @@ function domReady() {
       let apiEl = find('api-response', bodyEl, true);
 
       let options = getOptions(find('api-input', bodyEl));
+      let queryParams = getOptions(find('api-input-query-param', bodyEl))
 
       let endpointEl = parents('api-endpoint', this, true);
       let endpointId = endpointEl.getAttribute('id');
       if (endpointId in urlFn) url = urlFn[endpointId](url, options);
 
-      if (options.limit) url += `?limit=${options.limit}`;
       if (options.id) url += `${options.id}/`;
+
+      let urlParams = [];
+      for (let param in queryParams) {
+        urlParams.push(`${param}=${queryParams[param]}`);
+      }
+
+      if (options.limit) urlParams.push(`limit=${options.limit}`);
+
+      if (urlParams.length) {
+        url += `?${urlParams.join('&')}`;
+      }
 
       get(url).then(function(response) {
         apiResponse(apiEl, response);
