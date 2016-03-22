@@ -29,7 +29,7 @@ router.get('/article/:id/', async function(req, res, next) {
 router.get('/history/', Catch(async function(req, res) {
   var starting = new Date();
   starting.setDate(starting.getDate() - (req.query.startingDaysAgo || 7));
-  let history = await History.find({timestamp: {$gt: starting}}).sort({ timestamp: -1 }).exec()
+  let history = await History.find({timestamp: {$gt: starting}}).batchSize(2016).sort({ timestamp: -1 }).exec()
   res.json({ history })
 }));
 
