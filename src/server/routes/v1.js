@@ -5,7 +5,7 @@ var logger = debug('app:v1');
 
 import { Router } from 'express';
 
-import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries, History } from '../db';
+import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries, ReferrerHistory } from '../db';
 import { Catch, v1NewsMongoFilter } from '../lib/index';
 import * as recipes from './v1/recipes';
 
@@ -27,10 +27,9 @@ router.get('/article/:id/', async function(req, res, next) {
 });
 
 router.get('/history/', Catch(async function(req, res) {
-  var starting = new Date();
-  starting.setDate(starting.getDate() - (req.query.startingDaysAgo || 7));
-  let history = await History.find({timestamp: {$gt: starting}}).batchSize(2016).sort({ timestamp: -1 }).exec()
-  res.json({ history })
+  let starting = new Date().setDate(starting.getDate() - (req.query.startingDaysAgo || 7));
+  let referrers = await ReferrerHistory.find({created_at: {$gt: starting}}).batchSize(2016).sort({ created_at: -1 }).exec()
+  res.json({ referrers })
 }));
 
 router.get('/snapshot/toppages/', getSnapshot(Toppages));

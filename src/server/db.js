@@ -19,7 +19,7 @@ export let Topgeo = mongoose.model('Topgeo', new Schema({}), 'Topgeo');
 export let Referrers = mongoose.model('Referrers', new Schema({}), 'Referrers');
 export let Recent = mongoose.model('Recent', new Schema({}), 'Recent');
 export let TrafficSeries = mongoose.model('TrafficSeries', new Schema({}), 'TrafficSeries');
-export let History = mongoose.model('History', new Schema({}), 'History');
+export let ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
 
 const defaults = {
   server: {
@@ -37,7 +37,7 @@ export function connect(dbString, options=defaults) {
       logger('Connected to mongodb!');
       setupCollections();
       resolve(true);
-    });
+    })
   });
 }
 
