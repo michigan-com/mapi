@@ -27,8 +27,10 @@ router.get('/article/:id/', async function(req, res, next) {
 });
 
 router.get('/history/', Catch(async function(req, res) {
-  let starting = new Date().setDate(starting.getDate() - (req.query.startingDaysAgo || 7));
+  let starting = new Date()
+  starting.setDate(starting.getDate() - (req.query.startingDaysAgo || 7));
   let referrers = await ReferrerHistory.find({created_at: {$gt: starting}}).batchSize(2016).sort({ created_at: -1 }).exec()
+  console.log(referrers)
   res.json({ referrers })
 }));
 
