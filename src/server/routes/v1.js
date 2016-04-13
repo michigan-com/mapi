@@ -25,6 +25,22 @@ router.get('/article/:id/', async function(req, res, next) {
 
   res.json(article);
 });
+router.get('/article', async function(req, res, next) {
+  // endpoint for frequency count in dashboard, for now
+  let articles =
+    req.query.fromDate
+      ? await Article.find({ created_at: { '$gt': req.query.fromDate } }).select('created_at').exec()
+      : undefined;
+
+  if (!articles) {
+    let err = new Error(`Could not find articles with any ${req.query.fromDate}`);
+    err.status = 404;
+    err.type = 'json';
+    return next(err);
+  }
+
+  res.json(article);
+});
 
 router.get('/history/', Catch(async function(req, res) {
   let starting = new Date()
