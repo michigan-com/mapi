@@ -29,7 +29,7 @@ router.get('/article', async function(req, res, next) {
   // endpoint for frequency count in dashboard, for now
   let articles =
     req.query.fromDate
-      ? await Article.find({ created_at: { '$gt': req.query.fromDate } }).select('created_at').exec()
+      ? await Article.find({ created_at: { '$gt': new Date(req.query.fromDate) } }).select('created_at').exec()
       : undefined;
 
   if (!articles) {
