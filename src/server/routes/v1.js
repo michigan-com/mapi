@@ -39,7 +39,7 @@ router.get('/article', async function(req, res, next) {
     return next(err);
   }
 
-  res.json(article);
+  res.json(articles);
 });
 
 router.get('/history/', Catch(async function(req, res) {
