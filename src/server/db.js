@@ -12,13 +12,13 @@ export let recipes = null;
 var Schema = mongoose.Schema;
 
 export let Recipe = mongoose.model('Recipe', new Schema({}), 'Recipe');
-export let Article = mongoose.model('Article', new Schema({}), 'Article');
-export let Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
-export let Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
-export let Topgeo = mongoose.model('Topgeo', new Schema({}), 'Topgeo');
-export let Referrers = mongoose.model('Referrers', new Schema({}), 'Referrers');
-export let Recent = mongoose.model('Recent', new Schema({}), 'Recent');
-export let TrafficSeries = mongoose.model('TrafficSeries', new Schema({}), 'TrafficSeries');
+export let Article = mongoose.model('Article', new Schema({}, { capped: 1024 * 1024 }), 'Article');
+export let Toppages = mongoose.model('Toppages', new Schema({}, { capped: { size: 500 * 1024, max: 10 } }), 'Toppages');
+export let Quickstats = mongoose.model('Quickstats', new Schema({}, { capped: { size: 500 * 1024, max: 10 } }), 'Quickstats');
+export let Topgeo = mongoose.model('Topgeo', new Schema({}, { capped: { size: 500 * 1024, max: 10 } }), 'Topgeo');
+export let Referrers = mongoose.model('Referrers', new Schema({}, { capped: { size: 500 * 1024, max: 10 } }), 'Referrers');
+export let Recent = mongoose.model('Recent', new Schema({}, { capped: { size: 500 * 1024, max: 10 } }), 'Recent');
+export let TrafficSeries = mongoose.model('TrafficSeries', new Schema({}, { capped: { size: 500 * 1024, max: 10 } }), 'TrafficSeries');
 export let ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
 
 const defaults = {

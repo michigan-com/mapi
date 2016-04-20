@@ -9,7 +9,7 @@ import debug from 'debug';
 var logger = debug("app:socket");
 
 import { router, v1 } from './routes/index';
-import * as sockets from './routes/socket';
+import { subscribeToCollections } from './routes/socket';
 import configureMiddleware from './middleware.js';
 
 var BASE_DIR = path.dirname(__dirname);
@@ -53,13 +53,7 @@ function configureRoutes(app, io) {
 
   io.on('connection', function(socket) {
     logger("Connected to SocketIO!");
-    sockets.popular(socket);
-    sockets.articles(socket);
-    sockets.quickstats(socket);
-    sockets.topgeo(socket);
-    sockets.referrers(socket);
-    sockets.recent(socket);
-    sockets.trafficSeries(socket);
+    subscribeToCollections(socket);
   });
 }
 

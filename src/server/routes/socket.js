@@ -1,58 +1,32 @@
 'use strict';
+import decamelize from 'decamelize';
+import Mongoose from 'mongoose';
+import * as models from '../db'
 
-import { Catch } from '../lib';
-import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries } from '../db';
+const socketCollections = [
+  'Article',
+  'Toppages',
+  'Quickstats',
+  'Topgeo',
+  'Referrers',
+  'Recent',
+  'TrafficSeries'
+];
 
-export function articles(socket) {
-  socket.on('get_articles', Catch(async function(req, res, next) {
-    let filter = req.data || {};
-    let articles = await Article.find(req.data).exec();
-    socket.emit('got_articles', { articles, filters: req.data });
-  }));
-}
-
-export function popular(socket) {
-  socket.on('get_popular', Catch(async function() {
-    let snapshot = await getSnapshot(Toppages).exec();
-    socket.emit('got_popular', { snapshot });
-  }));
-}
-
-export function quickstats(socket) {
-  socket.on('get_quickstats', Catch(async function() {
-    let snapshot = await getSnapshot(Quickstats).exec();
-    socket.emit('got_quickstats', { snapshot })
-  }));
-}
-
-export function topgeo(socket) {
-  socket.on('get_topgeo', Catch(async function() {
-    let snapshot = await getSnapshot(Topgeo).exec();
-    socket.emit('got_topgeo', { snapshot });
-  }));
-}
-
-export function referrers(socket) {
-  socket.on('get_referrers', Catch(async function() {
-    let snapshot = await getSnapshot(Referrers).exec();
-    socket.emit('got_referrers', { snapshot });
-  }));
-}
-
-export function recent(socket) {
-  socket.on('get_recent', Catch(async function() {
-    let snapshot = await getSnapshot(Recent).exec();
-    socket.emit('got_recent', { snapshot });
-  }));
-}
-
-export function trafficSeries(socket) {
-  socket.on('get_traffic_series', Catch(async function() {
-    let snapshot = await getSnapshot(TrafficSeries).exec();
-    socket.emit('got_traffic_series', { snapshot });
-  }));
-}
-
-function getSnapshot(model) {
-  return model.findOne().sort({ _id: -1 });
-}
+export function subscribeToCollections(socket){
+  let streams = [];
+  socketCollections.forEach((collection) => {
+    let lowercaseCollection = decamelize(collection);
+    socket.on(`get_${lowercaseCollection}`, () => {
+      let stream = models[collection].find({  }).setOptions({ tailable: true, awaitData: true, numberOfRetries: -1 }).stream()
+      streams.push(stream)
+      stream.on('data', (snapshot) => {
+        console.log(snapshot)
+        socket.emit(`got_${lowercaseCollection}`, snapshot)
+      })
+    })
+  });
+  socket.on('disconnect', () => {
+    streams.forEach(stream => stream.destroy())
+  })
+};
