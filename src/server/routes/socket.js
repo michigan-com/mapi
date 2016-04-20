@@ -21,7 +21,6 @@ export function subscribeToCollections(socket){
       let stream = models[collection].find({  }).setOptions({ tailable: true, awaitData: true, numberOfRetries: -1 }).stream()
       streams.push(stream)
       stream.on('data', (snapshot) => {
-        console.log(snapshot)
         socket.emit(`got_${lowercaseCollection}`, snapshot)
       })
     })
