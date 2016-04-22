@@ -20,6 +20,14 @@ export let Referrers = mongoose.model('Referrers', new Schema({}, { capped: { si
 export let Recent = mongoose.model('Recent', new Schema({}, { capped: { size: 500 * 1024, max: 10 } }), 'Recent');
 export let TrafficSeries = mongoose.model('TrafficSeries', new Schema({}, { capped: { size: 500 * 1024, max: 10 } }), 'TrafficSeries');
 export let ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
+// export let Article = mongoose.model('Article', new Schema({} ), 'Article');
+// export let Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
+// export let Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
+// export let Topgeo = mongoose.model('Topgeo', new Schema({}), 'Topgeo');
+// export let Referrers = mongoose.model('Referrers', new Schema({}), 'Referrers');
+// export let Recent = mongoose.model('Recent', new Schema({}), 'Recent');
+// export let TrafficSeries = mongoose.model('TrafficSeries', new Schema({}), 'TrafficSeries');
+// export let ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
 
 const defaults = {
   server: {

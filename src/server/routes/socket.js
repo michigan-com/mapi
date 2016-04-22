@@ -1,10 +1,10 @@
 'use strict';
 import decamelize from 'decamelize';
-import Mongoose from 'mongoose';
 import * as models from '../db'
+import debug from 'debug';
+var logger = debug('app:v1');
 
 const socketCollections = [
-  'Article',
   'Toppages',
   'Quickstats',
   'Topgeo',
@@ -18,10 +18,20 @@ export function subscribeToCollections(socket){
   socketCollections.forEach((collection) => {
     let lowercaseCollection = decamelize(collection);
     socket.on(`get_${lowercaseCollection}`, () => {
-      let stream = models[collection].find({  }).setOptions({ tailable: true, awaitData: true, numberOfRetries: -1 }).stream()
+      // // migration helper
+      // console.log(models[collection].db.executeDbCommand.isCapped(collection))
+      // if(!models[collection].db.executeDbCommand.isCapped(collection)){
+      //   models[collection].db.executeDbCommand({'convertToCapped': collection, size: 500*1024}, function(e,d){});
+      // }
+      let stream = models[collection].find()
+        .tailable(true, { awaitData: true, numberOfRetries: -1 })
+        .stream()
       streams.push(stream)
-      stream.on('data', (snapshot) => {
-        socket.emit(`got_${lowercaseCollection}`, snapshot)
+      stream.on('data', (data) => {
+        console.log('Socket emit %s', collection)
+        socket.emit(`got_${lowercaseCollection}`, {snapshot: data} )
+      }).on('error', (err) => {
+        logger(`Error streaming ${collection}: ${err}`)
       })
     })
   });

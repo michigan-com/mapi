@@ -50,7 +50,6 @@ function configureRoutes(app, io) {
 
   app.use('/', router);
   app.use('/v1/', v1);
-
   io.on('connection', function(socket) {
     logger("Connected to SocketIO!");
     subscribeToCollections(socket);
