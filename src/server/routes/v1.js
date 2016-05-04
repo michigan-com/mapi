@@ -30,7 +30,6 @@ router.get('/article/', async function(req, res, next) {
   // endpoint for frequency count in dashboard, for now
   let fromDate = new Date();
   if (req.query.fromDate) fromDate = new Date(req.query.fromDate);
-  fromDate.setHours(0, 0, 0, 0);
 
   var queryDate = fromDate.toUTCString();
   let articles =  await Article.find({ created_at: { '$gt': fromDate }}).select('-body -summary').sort('-timestamp').exec();
