@@ -25,15 +25,16 @@ router.get('/article/:id/', async function(req, res, next) {
 
   res.json(article);
 });
-router.get('/article', async function(req, res, next) {
-  // endpoint for frequency count in dashboard, for now
-  let articles =
-    req.query.fromDate
-      ? await Article.find({ created_at: { '$gt': new Date(req.query.fromDate) } }).select('source created_at').exec()
-      : undefined;
 
+router.get('/article/', async function(req, res, next) {
+  // endpoint for frequency count in dashboard, for now
+  let fromDate = new Date();
+  if (req.query.fromDate) fromDate = new Date(req.query.fromDate);
+  fromDate.setHours(0, 0, 0, 0);
+  console.log(fromDate);
+  let articles =  await Article.find({ created_at: { '$gt': fromDate }}).select('-body -summary').sort('-timestamp').exec();
   if (!articles) {
-    let err = new Error(`Could not find articles with any ${req.query.fromDate}`);
+    let err = new Error(`Could not find articles with on date ${fromDate}`);
     err.status = 404;
     err.type = 'json';
     return next(err);
