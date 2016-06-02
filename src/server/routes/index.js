@@ -3,7 +3,7 @@
 import { Router } from 'express';
 
 import v1 from './v1';
-import { Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries } from '../db';
+import { Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries, BreakingNews } from '../db';
 import { Catch } from '../lib/index';
 import debug from 'debug';
 var logger = debug('app:route');
