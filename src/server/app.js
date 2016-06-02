@@ -60,6 +60,7 @@ function configureRoutes(app, io) {
     sockets.referrers(socket);
     sockets.recent(socket);
     sockets.trafficSeries(socket);
+    sockets.breakingNews(socket);
   });
 }
 

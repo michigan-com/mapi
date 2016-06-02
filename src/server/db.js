@@ -20,6 +20,7 @@ export let Referrers = mongoose.model('Referrers', new Schema({}), 'Referrers');
 export let Recent = mongoose.model('Recent', new Schema({}), 'Recent');
 export let TrafficSeries = mongoose.model('TrafficSeries', new Schema({}), 'TrafficSeries');
 export let ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
+export let BreakingNews = mongoose.model('BreakingNews', new Schema({}), 'BreakingNews');
 
 const defaults = {
   server: {

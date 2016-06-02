@@ -52,6 +52,12 @@ router.get('/traffic-series/', Catch(async function(req, res, next) {
   res.json({ success: true });
 }));
 
+router.get('/breaking-news/', Catch(async function(req, res, next) {
+  let snapshot = await getSnapshot(BreakingNews).exec();
+  req.io.emit('got_breaking_news', { snapshot });
+  res.json({ success: true });
+}));
+
 
 // Getter functions for Chartbeat snapshots
 function getSnapshot(model) {
