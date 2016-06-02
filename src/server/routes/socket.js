@@ -56,7 +56,7 @@ export function trafficSeries(socket) {
 
 export function breakingNews(socket) {
   socket.on('get_breaking_news', Catch(async function() {
-    let snapshot = getSnapshot(BreakingNews).exec();
+    let snapshot = await getSnapshot(BreakingNews).exec();
     socket.emit('got_breaking_news', { snapshot });
   }))
 }
