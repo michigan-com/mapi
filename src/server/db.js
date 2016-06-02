@@ -12,7 +12,12 @@ export let recipes = null;
 var Schema = mongoose.Schema;
 
 export let Recipe = mongoose.model('Recipe', new Schema({}), 'Recipe');
-export let Article = mongoose.model('Article', new Schema({}), 'Article');
+export let Article = mongoose.model('Article', new Schema({
+  created_at: {
+    type: Date,
+    expires: '90d'
+  }
+}), 'Article');
 export let Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
 export let Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
 export let Topgeo = mongoose.model('Topgeo', new Schema({}), 'Topgeo');
