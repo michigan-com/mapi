@@ -13,7 +13,7 @@ var Schema = mongoose.Schema;
 
 export let Recipe = mongoose.model('Recipe', new Schema({}), 'Recipe');
 export let Article = mongoose.model('Article', new Schema({
-  created_at: {
+  inserted_at: {
     type: Date,
     expires: '90d'
   }
