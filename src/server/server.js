@@ -23,6 +23,13 @@ server.on('close', function() {
 
 logger(`Environment: ${app.get('env')}`);
 
+process.on('SIGTERM', () => {
+  logger('Shutting down...')
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
 function startListening() {
   server.listen(port, '0.0.0.0', function(err) {
     if (err) throw new Error(err);

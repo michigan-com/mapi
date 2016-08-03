@@ -27,6 +27,15 @@ export let TrafficSeries = mongoose.model('TrafficSeries', new Schema({}), 'Traf
 export let ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
 export let BreakingNews = mongoose.model('BreakingNews', new Schema({}), 'BreakingNews');
 
+export let PlatformStatsDaily = mongoose.model('PlatformStatsDaily', new Schema({}), 'PlatformStatsDaily');
+export let DomainDaily = mongoose.model('DomainDaily', new Schema({}), 'DomainDaily');
+export let AuthorDaily = mongoose.model('AuthorDaily', new Schema({}), 'AuthorDaily');
+export let ArticleDaily = mongoose.model('ArticleDaily', new Schema({}), 'ArticleDaily');
+export let DomainTotals = mongoose.model('DomainTotals', new Schema({}), 'DomainTotals');
+export let AuthorTotals = mongoose.model('AuthorTotals', new Schema({}), 'AuthorTotals');
+export let ArticleTotals = mongoose.model('ArticleTotals', new Schema({}), 'ArticleTotals');
+export let ReferrersDaily = mongoose.model('ReferrersDaily', new Schema({}), 'ReferrersDaily');
+
 const defaults = {
   server: {
     socketOptions: { keepAlive: 1 }

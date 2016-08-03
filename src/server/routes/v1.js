@@ -7,8 +7,10 @@ import { Router } from 'express';
 
 import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries,
   ReferrerHistory, BreakingNews } from '../db';
+import * as db from '../db';
 import { Catch, v1NewsMongoFilter } from '../lib/index';
 import * as recipes from './v1/recipes';
+import * as anal from './v1/analytics';
 
 var router = Router();
 
@@ -61,6 +63,15 @@ router.get('/snapshot/recent/', getSnapshot(Recent));
 router.get('/snapshot/traffic-series/', getSnapshot(TrafficSeries));
 
 router.get('/breaking-news', getSnapshot(BreakingNews));
+
+router.get('/stats/domains/', Catch(anal.loadDomainStats))
+router.get('/stats/articles/', Catch(anal.loadArticleStats))
+router.get('/stats/authors/', Catch(anal.loadAuthorStats))
+router.get('/stats/referrers/', Catch(anal.loadReferrers))
+
+router.get('/totals/domains/', Catch(anal.loadDomainTotals))
+router.get('/totals/articles/', Catch(anal.loadArticleTotals))
+router.get('/totals/authors/', Catch(anal.loadAuthorTotals))
 
 /**
  * Fetch a Chartbeat Snapshot
