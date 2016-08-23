@@ -285,6 +285,54 @@ block content
         h4 Response
         pre.api-response
 
+  article#v1-stats-referrers.api-endpoint
+    div.api-request
+      h3 GET /v1/stats/referrers
+    div.api-body
+      p.api-info.
+        Grabs historical referral data
+
+      .query-params
+        h4 Required
+        .row.api-input-container
+          .col-left
+            label Number of days
+            input(type='text', id='days', name='days', class='api-input-query-param', value='1')
+          .col-right
+            p How many days in the past to query for data
+
+      .query-params
+        h4 Optional
+
+        .row.api-input-container
+          .col-left
+            label domains
+            input(type='text', id='domains', name='domains', class='api-input-query-param', value='freep.com')
+          .col-right
+            p List of domains to search for (e.g. freep.com, detroitnews.com)
+
+        .row.api-input-container
+          .col-left
+            label Sort
+            input(type='text', id='sort', name='sort', class='api-input-query-param', value='')
+          .col-right
+            p Sort data DESC with + or ASC with - by key
+
+        .row.api-input-container
+          .col-left
+            label Limit
+            input(type='text', id='limit', name='limit', class='api-input-query-param', value='')
+          .col-right
+            p Limit the number of domains
+
+      div
+        hr
+        button(data-url='/v1/stats/referrers', class='btn animate green') Execute
+
+      .row
+        h4 Response
+        pre.api-response
+
   article#v1-stats-domains.api-endpoint
     div.api-request
       h3 GET /v1/stats/domains
@@ -334,55 +382,7 @@ block content
 
       div
         hr
-        button(data-url='/v1/stats/domain', class='btn animate green') Execute
-
-      .row
-        h4 Response
-        pre.api-response
-
-  article#v1-stats-referrers.api-endpoint
-    div.api-request
-      h3 GET /v1/stats/referrers
-    div.api-body
-      p.api-info.
-        Grabs historical referral data
-
-      .query-params
-        h4 Required
-        .row.api-input-container
-          .col-left
-            label Number of days
-            input(type='text', id='days', name='days', class='api-input-query-param', value='1')
-          .col-right
-            p How many days in the past to query for data
-
-      .query-params
-        h4 Optional
-
-        .row.api-input-container
-          .col-left
-            label domains
-            input(type='text', id='domains', name='domains', class='api-input-query-param', value='freep.com')
-          .col-right
-            p List of domains to search for (e.g. freep.com, detroitnews.com)
-
-        .row.api-input-container
-          .col-left
-            label Sort
-            input(type='text', id='sort', name='sort', class='api-input-query-param', value='')
-          .col-right
-            p Sort data DESC with + or ASC with - by key
-
-        .row.api-input-container
-          .col-left
-            label Limit
-            input(type='text', id='limit', name='limit', class='api-input-query-param', value='')
-          .col-right
-            p Limit the number of domains
-
-      div
-        hr
-        button(data-url='/v1/stats/referrers', class='btn animate green') Execute
+        button(data-url='/v1/stats/domains', class='btn animate green') Execute
 
       .row
         h4 Response
@@ -403,6 +403,13 @@ block content
             input(type='text', id='days', name='days', class='api-input-query-param', value='1')
           .col-right
             p How many days in the past to query for data
+
+        .row.api-input-container
+          .col-left
+            label Keys
+            input(type='text', id='keys', name='keys', class='api-input-query-param', value='raw')
+          .col-right
+            p Which keys to grab from data (e.g. raw, domain, period, tmstart, tmend, count, maxv, maxm, maxd, summ, sumd, maxrecirc, maxavgengtm, sumengtm)
 
       .query-params
         h4 Optional
