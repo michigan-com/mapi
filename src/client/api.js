@@ -53,7 +53,8 @@ function domReady() {
 
       let urlParams = [];
       for (let param in queryParams) {
-        urlParams.push(`${param}=${queryParams[param]}`);
+        if (queryParams[param] === '') continue;
+        urlParams.push(`${param}=${encodeURIComponent(queryParams[param])}`);
       }
 
       if (options.limit) urlParams.push(`limit=${options.limit}`);
@@ -147,4 +148,3 @@ function parents(className, startElem=document, onlyOne=false) {
   }
   return elems;
 }
-
