@@ -1,66 +1,135 @@
+/* eslint-disable new-cap, no-loop-func */
 'use strict';
 
 import { Catch } from '../lib';
 import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries,
   BreakingNews } from '../db';
 
-export function articles(socket) {
-  socket.on('get_articles', Catch(async function(req, res, next) {
-    let filter = req.data || {};
-    let articles = await Article.find(req.data).exec();
+import * as analytics from './v1/analytics';
+
+function getSnapshot(model) {
+  return model.findOne().sort({ _id: -1 });
+}
+
+function registerArticleEvent(socket) {
+  socket.on('get_articles', Catch(async (req) => {
+    const articles = await Article.find(req.data).exec();
     socket.emit('got_articles', { articles, filters: req.data });
   }));
 }
 
-export function popular(socket) {
-  socket.on('get_popular', Catch(async function() {
-    let snapshot = await getSnapshot(Toppages).exec();
+function registerPopularEvent(socket) {
+  socket.on('get_popular', Catch(async () => {
+    const snapshot = await getSnapshot(Toppages).exec();
     socket.emit('got_popular', { snapshot });
   }));
 }
 
-export function quickstats(socket) {
-  socket.on('get_quickstats', Catch(async function() {
-    let snapshot = await getSnapshot(Quickstats).exec();
-    socket.emit('got_quickstats', { snapshot })
+function registerQuickstatsEvent(socket) {
+  socket.on('get_quickstats', Catch(async () => {
+    const snapshot = await getSnapshot(Quickstats).exec();
+    socket.emit('got_quickstats', { snapshot });
   }));
 }
 
-export function topgeo(socket) {
-  socket.on('get_topgeo', Catch(async function() {
-    let snapshot = await getSnapshot(Topgeo).exec();
+function registerTopGeoEvent(socket) {
+  socket.on('get_topgeo', Catch(async () => {
+    const snapshot = await getSnapshot(Topgeo).exec();
     socket.emit('got_topgeo', { snapshot });
   }));
 }
 
-export function referrers(socket) {
-  socket.on('get_referrers', Catch(async function() {
-    let snapshot = await getSnapshot(Referrers).exec();
+function registerReferrerEvent(socket) {
+  socket.on('get_referrers', Catch(async () => {
+    const snapshot = await getSnapshot(Referrers).exec();
     socket.emit('got_referrers', { snapshot });
   }));
 }
 
-export function recent(socket) {
-  socket.on('get_recent', Catch(async function() {
-    let snapshot = await getSnapshot(Recent).exec();
+function registerRecentEvent(socket) {
+  socket.on('get_recent', Catch(async () => {
+    const snapshot = await getSnapshot(Recent).exec();
     socket.emit('got_recent', { snapshot });
   }));
 }
 
-export function trafficSeries(socket) {
-  socket.on('get_traffic_series', Catch(async function() {
-    let snapshot = await getSnapshot(TrafficSeries).exec();
+function registerTrafficSeriesEvent(socket) {
+  socket.on('get_traffic_series', Catch(async () => {
+    const snapshot = await getSnapshot(TrafficSeries).exec();
     socket.emit('got_traffic_series', { snapshot });
   }));
 }
 
-export function breakingNews(socket) {
-  socket.on('get_breaking_news', Catch(async function() {
-    let snapshot = await getSnapshot(BreakingNews).exec();
+function registerBreakingNewsEvent(socket) {
+  socket.on('get_breaking_news', Catch(async () => {
+    const snapshot = await getSnapshot(BreakingNews).exec();
     socket.emit('got_breaking_news', { snapshot });
-  }))
+  }));
 }
 
-function getSnapshot(model) {
-  return model.findOne().sort({ _id: -1 });
+function registerStatsEvents(socket) {
+  const statsSocketEvents = [{
+    eventName: 'stats-domains',
+    statsObj: analytics.loadDomainStats,
+  }, {
+    eventName: 'stats-referrers',
+    statsObj: analytics.loadReferrers,
+  }, {
+    eventName: 'stats-articles',
+    statsObj: analytics.loadArticleStats,
+  }, {
+    eventName: 'stats-authors',
+    statsObj: analytics.loadAuthorStats,
+  }];
+
+  for (const event of statsSocketEvents) {
+    socket.on(`get-${event.eventName}`, async (data) => {
+      try {
+        const response = await event.statsObj.getHistoricalValues(data);
+        socket.emit(`got-${event.eventName}`, response);
+      } catch (e) {
+        socket.emit(`error-${event.eventName}`, { error: e });
+      }
+    });
+  }
+}
+
+function registerTotalsEvents(socket) {
+  const totalsSocketEvents = [{
+    eventName: 'totals-domain',
+    totalsObj: analytics.loadDomainTotals,
+  }, {
+    eventName: 'totals-articles',
+    totalsObj: analytics.loadArticleStats,
+  }, {
+    eventName: 'totals-authors',
+    totalsObj: analytics.loadAuthorTotals,
+  }];
+
+  for (const event of totalsSocketEvents) {
+    socket.on(`get-${event.eventName}`, async (data) => {
+      try {
+        const response = await event.totalsObj.getTotalValues(data);
+        socket.emit(`got-${event.eventName}`, response);
+      } catch (e) {
+        socket.emit(`error-${event.eventName}`, { error: e });
+      }
+    });
+  }
+}
+
+export function newSocketConnection(socket) {
+  // Older stuff
+  registerArticleEvent(socket);
+  registerPopularEvent(socket);
+  registerQuickstatsEvent(socket);
+  registerTopGeoEvent(socket);
+  registerReferrerEvent(socket);
+  registerRecentEvent(socket);
+  registerTrafficSeriesEvent(socket);
+  registerBreakingNewsEvent(socket);
+
+  // newer stuff
+  registerStatsEvents(socket);
+  registerTotalsEvents(socket);
 }

@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import Express from 'express';
 import SocketIO from 'socket.io';
 import debug from 'debug';
-var logger = debug("app:socket");
+var logger = debug('app:socket');
 
 import { router, v1 } from './routes/index';
 import * as sockets from './routes/socket';
@@ -39,11 +39,11 @@ function configureRoutes(app, io) {
    * microsoft requests this file from all subdomains.
    * It is placed here so we don't see the HTTP requests in our logging
    */
-  app.use('/autodiscover/autodiscover.xml', function(req, res, next) {
+  app.use('/autodiscover/autodiscover.xml', function (req, res, next) {
     res.send('');
   });
 
-  app.use(function(req, res, next) {
+  app.use(function (req, res, next) {
     req.io = io;
     next();
   });
@@ -51,16 +51,9 @@ function configureRoutes(app, io) {
   app.use('/', router);
   app.use('/v1/', v1);
 
-  io.on('connection', function(socket) {
-    logger("Connected to SocketIO!");
-    sockets.popular(socket);
-    sockets.articles(socket);
-    sockets.quickstats(socket);
-    sockets.topgeo(socket);
-    sockets.referrers(socket);
-    sockets.recent(socket);
-    sockets.trafficSeries(socket);
-    sockets.breakingNews(socket);
+  io.on('connection', function (socket) {
+    logger('Connected to SocketIO!');
+    sockets.newSocketConnection(socket);
   });
 }
 

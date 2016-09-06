@@ -10,13 +10,13 @@ import { Article, Toppages, Quickstats, Topgeo, Referrers, Recent, TrafficSeries
 import * as db from '../db';
 import { Catch, v1NewsMongoFilter } from '../lib/index';
 import * as recipes from './v1/recipes';
-import * as anal from './v1/analytics';
+import * as analytics from './v1/analytics';
 
 var router = Router();
 
 router.get('/article/:id/', async function(req, res, next) {
   let article = await Article.findOne({
-    article_id: parseInt(req.params.id)
+    article_id: parseInt(req.params.id),
   }).exec();
 
   if (!article) {
@@ -35,7 +35,7 @@ router.get('/article/', async function(req, res, next) {
   if (req.query.fromDate) fromDate = new Date(req.query.fromDate);
 
   var queryDate = fromDate.toUTCString();
-  let articles =  await Article.find({ created_at: { '$gt': fromDate }}).select('-body -summary').sort('-timestamp').exec();
+  let articles = await Article.find({ created_at: { '$gt': fromDate } }).select('-body -summary').sort('-timestamp').exec();
   if (!articles) {
     let err = new Error(`Could not find articles with on date ${fromDate}`);
     err.status = 404;
@@ -47,11 +47,11 @@ router.get('/article/', async function(req, res, next) {
 });
 
 router.get('/history/', Catch(async function(req, res) {
-  let starting = new Date()
+  let starting = new Date();
   if (req.query.fromSecondsAgo) starting.setSeconds(- req.query.fromSecondsAgo);
   else starting.setDate(starting.getDate() - (Date.parse(req.query.startingFrom) || req.query.startingDaysAgo || 7));
-  let referrers = await ReferrerHistory.find({created_at: {$gt: starting}}).batchSize(2016).sort({ created_at: -1 }).exec()
-  res.json({ referrers })
+  let referrers = await ReferrerHistory.find({ created_at: { $gt: starting } }).batchSize(2016).sort({ created_at: -1 }).exec();
+  res.json({ referrers });
 }));
 
 router.get('/snapshot/toppages/', getSnapshot(Toppages));
@@ -64,14 +64,14 @@ router.get('/snapshot/traffic-series/', getSnapshot(TrafficSeries));
 
 router.get('/breaking-news', getSnapshot(BreakingNews));
 
-router.get('/stats/domains/', Catch(anal.loadDomainStats))
-router.get('/stats/articles/', Catch(anal.loadArticleStats))
-router.get('/stats/authors/', Catch(anal.loadAuthorStats))
-router.get('/stats/referrers/', Catch(anal.loadReferrers))
+router.get('/stats/domains/', Catch(analytics.loadDomainStats.expressRoute));
+router.get('/stats/articles/', Catch(analytics.loadArticleStats.expressRoute));
+router.get('/stats/authors/', Catch(analytics.loadAuthorStats.expressRoute));
+router.get('/stats/referrers/', Catch(analytics.loadReferrers.expressRoute));
 
-router.get('/totals/domains/', Catch(anal.loadDomainTotals))
-router.get('/totals/articles/', Catch(anal.loadArticleTotals))
-router.get('/totals/authors/', Catch(anal.loadAuthorTotals))
+router.get('/totals/domains/', Catch(analytics.loadDomainTotals.expressRoute));
+router.get('/totals/articles/', Catch(analytics.loadArticleTotals.expressRoute));
+router.get('/totals/authors/', Catch(analytics.loadAuthorTotals.expressRoute));
 
 /**
  * Fetch a Chartbeat Snapshot
@@ -81,10 +81,10 @@ router.get('/totals/authors/', Catch(anal.loadAuthorTotals))
  */
 function getSnapshot(Collection) {
   return Catch(async function(req, res, next) {
-    let snapshot = await Collection.findOne({}).sort({created_at: -1}).exec();
+    let snapshot = await Collection.findOne({}).sort({ created_at: -1 }).exec();
 
     if (!snapshot) {
-      let err = new Error(`Snapshot not found`);
+      let err = new Error('Snapshot not found');
       err.status = 404;
       err.type = 'json';
       return next(err);
@@ -102,9 +102,9 @@ function getSnapshot(Collection) {
  */
 function fetchHistoricalSnapshots(Collection) {
   return Catch(async function(req, res, next) {
-    let limit = ('limit' in req.query ? req.query.limit : 20)
+    let limit = ('limit' in req.query ? req.query.limit : 20);
 
-    let snapshots = await Collection.find({}).sort({created_at: -1}).limit(limit).exec();
+    let snapshots = await Collection.find({}).sort({ created_at: -1 }).limit(limit).exec();
 
     res.json(snapshots);
   });
@@ -126,7 +126,7 @@ async function news(req, res, next) {
   let limit = 'limit' in req.query ? req.query.limit : DEFAULT_LIMIT;
   // TODO once we have the corresponding changes in the browser extension, uncomment the following line
   // to start filtering out non-photoed articles
-  //let hasPhoto = 'hasPhoto' in req.query ? true : false;
+  // let hasPhoto = 'hasPhoto' in req.query ? true : false;
   let hasPhoto = true;
 
   let mongoFilter = v1NewsMongoFilter(requestedSites, requestedSections, hasPhoto, next);
@@ -139,7 +139,7 @@ async function news(req, res, next) {
       news = news.limit(limit);
     }
     news = await news.sort({ timestamp: -1 }).exec();
-  } catch(err) {
+  } catch (err) {
     var err = new Error(err);
     err.status = 500;
     err.type = 'json';
