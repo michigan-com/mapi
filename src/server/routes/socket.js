@@ -12,58 +12,58 @@ function getSnapshot(model) {
 }
 
 function registerArticleEvent(socket) {
-  socket.on('get_articles', Catch(async (req) => {
+  socket.on('get-articles', Catch(async (req) => {
     const articles = await Article.find(req.data).exec();
-    socket.emit('got_articles', { articles, filters: req.data });
+    socket.emit('got-articles', { articles, filters: req.data });
   }));
 }
 
 function registerPopularEvent(socket) {
-  socket.on('get_popular', Catch(async () => {
+  socket.on('get-popular', Catch(async () => {
     const snapshot = await getSnapshot(Toppages).exec();
-    socket.emit('got_popular', { snapshot });
+    socket.emit('got-popular', { snapshot });
   }));
 }
 
 function registerQuickstatsEvent(socket) {
-  socket.on('get_quickstats', Catch(async () => {
+  socket.on('get-quickstats', Catch(async () => {
     const snapshot = await getSnapshot(Quickstats).exec();
-    socket.emit('got_quickstats', { snapshot });
+    socket.emit('got-quickstats', { snapshot });
   }));
 }
 
 function registerTopGeoEvent(socket) {
-  socket.on('get_topgeo', Catch(async () => {
+  socket.on('get-topgeo', Catch(async () => {
     const snapshot = await getSnapshot(Topgeo).exec();
-    socket.emit('got_topgeo', { snapshot });
+    socket.emit('got-topgeo', { snapshot });
   }));
 }
 
 function registerReferrerEvent(socket) {
-  socket.on('get_referrers', Catch(async () => {
+  socket.on('get-referrers', Catch(async () => {
     const snapshot = await getSnapshot(Referrers).exec();
-    socket.emit('got_referrers', { snapshot });
+    socket.emit('got-referrers', { snapshot });
   }));
 }
 
 function registerRecentEvent(socket) {
-  socket.on('get_recent', Catch(async () => {
+  socket.on('get-recent', Catch(async () => {
     const snapshot = await getSnapshot(Recent).exec();
-    socket.emit('got_recent', { snapshot });
+    socket.emit('got-recent', { snapshot });
   }));
 }
 
 function registerTrafficSeriesEvent(socket) {
-  socket.on('get_traffic_series', Catch(async () => {
+  socket.on('get-traffic-series', Catch(async () => {
     const snapshot = await getSnapshot(TrafficSeries).exec();
-    socket.emit('got_traffic_series', { snapshot });
+    socket.emit('got-traffic-series', { snapshot });
   }));
 }
 
 function registerBreakingNewsEvent(socket) {
-  socket.on('get_breaking_news', Catch(async () => {
+  socket.on('get-breaking-news', Catch(async () => {
     const snapshot = await getSnapshot(BreakingNews).exec();
-    socket.emit('got_breaking_news', { snapshot });
+    socket.emit('got-breaking-news', { snapshot });
   }));
 }
 
