@@ -180,6 +180,7 @@ class HistoricalValueQuery {
       fromDate = new Date();
       fromDate.setHours(0); fromDate.setMinutes(0); fromDate.setSeconds(0);
     }
+    console.log(fromDate);
 
     const criteria = { tmstart: { $gte: fromDate } };
     if (query.domains != null) {
@@ -297,6 +298,7 @@ class TotalsQuery {
       fromDate = new Date();
       fromDate.setHours(0); fromDate.setMinutes(0); fromDate.setSeconds(0);
     }
+    console.log(fromDate);
 
     const criteria = { tmstart: { $gte: fromDate } };
     if (query.domains != null) {
