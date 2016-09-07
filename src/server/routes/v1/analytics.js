@@ -15,6 +15,7 @@ export const DEFAULT_ANALYTICS_QUERY_PARAMS = {
   limit: null,
   keys: null,
   sort: '',
+  today: 0, // treating this like a boolean
 };
 
 const identity = (v) => (v);
@@ -173,7 +174,12 @@ class HistoricalValueQuery {
     let compactorInEffect = this.compactor;
 
     const days = query.days;
-    const fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+    let fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    if (query.today === '1') {
+      fromDate = new Date();
+      fromDate.setHours(0); fromDate.setMinutes(0); fromDate.setSeconds(0);
+    }
 
     const criteria = { tmstart: { $gte: fromDate } };
     if (query.domains != null) {
@@ -286,7 +292,11 @@ class TotalsQuery {
     const query = { ...DEFAULT_ANALYTICS_QUERY_PARAMS, ...reqParams };
 
     const days = query.days || 14;
-    const fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    let fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    if (query.today === '1') {
+      fromDate = new Date();
+      fromDate.setHours(0); fromDate.setMinutes(0); fromDate.setSeconds(0);
+    }
 
     const criteria = { tmstart: { $gte: fromDate } };
     if (query.domains != null) {
