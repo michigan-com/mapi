@@ -174,7 +174,7 @@ class AnalyticsQuery {
     }
     console.log(fromDate);
 
-    const criteria = { tmstart: { $gte: fromDate } };
+    const criteria = { tmend: { $gte: fromDate } };
     if (query.domains != null) {
       const domains = (`${query.domains}`).trim().split(/\s*,\s*/);
       if (domains.length === 1) {
@@ -196,6 +196,12 @@ class HistoricalValueQuery extends AnalyticsQuery {
   async runQuery(reqParams) {
     const query = { ...DEFAULT_ANALYTICS_QUERY_PARAMS, ...reqParams };
     const criteria = this.formatQueryParams(query);
+
+    // filter for all values after the specified fromDate
+    criteria['values.tm'] = {
+      $gte: criteria.tmend.$gte,
+    };
+    console.log(criteria);
 
     let compactorInEffect = this.compactor;
 
@@ -243,7 +249,7 @@ class HistoricalValueQuery extends AnalyticsQuery {
       q = q.limit(limit);
     }
     let rows = await q.exec();
-    if (!rows) {
+    if (!rows.length) {
       throw new Error(`Could not find rows from date ${criteria.tmstart.$gte}`);
     }
     rows = rows.map((row) => row.toObject());
@@ -326,16 +332,17 @@ class TotalsQuery extends AnalyticsQuery {
       q = q.limit(limit);
     }
     let rows = await q.exec();
-    if (!rows) {
+    if (!rows.length) {
       throw new Error(`Could not find rows from date ${criteria.tmstart.$gte}`);
     }
     rows = rows.map((row) => row.toObject());
 
-    rows.sort((a, b) => {
-      if (a.tmstart < b.tmstart) return -1;
-      else if (a.tmstart > b.tmstart) return 1;
-      return 0;
-    });
+    rows.filter((a) => (a.tm))
+      .sort((a, b) => {
+        if (a.tmstart < b.tmstart) return -1;
+        else if (a.tmstart > b.tmstart) return 1;
+        return 0;
+      });
 
     const rowsByKey = {};
     rows.forEach((row) => {
