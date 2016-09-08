@@ -30,7 +30,7 @@ const identity = (v) => (v);
 // }
 
 function mergeReferrers(snapshots) {
-  console.log('mergeReferrers = %s', JSON.stringify(mergeReferrers));
+  // console.log('mergeReferrers = %s', JSON.stringify(mergeReferrers));
   const domains = {};
   snapshots.forEach((snapshot) => {
     snapshot.d.forEach((d) => {
@@ -85,12 +85,14 @@ function expandKeys(keys) {
   return expanded;
 }
 
-function mapHistoricalValuesToCompactForm(rows, compactor) {
+function mapHistoricalValuesToCompactForm(rows, compactor, filter = () => (true)) {
   const values = [];
   rows.forEach((row) => {
     row.values.forEach((v) => {
       const newv = compactor(v);
-      values.push(newv);
+      if (filter(newv)) {
+        values.push(newv);
+      }
     });
   });
 
@@ -172,7 +174,6 @@ class AnalyticsQuery {
     if (!isNaN(start)) {
       fromDate = new Date(start);
     }
-    console.log(fromDate);
 
     const criteria = { tmend: { $gte: fromDate } };
     if (query.domains != null) {
@@ -196,12 +197,6 @@ class HistoricalValueQuery extends AnalyticsQuery {
   async runQuery(reqParams) {
     const query = { ...DEFAULT_ANALYTICS_QUERY_PARAMS, ...reqParams };
     const criteria = this.formatQueryParams(query);
-
-    // filter for all values after the specified fromDate
-    criteria['values.tm'] = {
-      $gte: criteria.tmend.$gte,
-    };
-    console.log(criteria);
 
     let compactorInEffect = this.compactor;
 
@@ -270,15 +265,20 @@ class HistoricalValueQuery extends AnalyticsQuery {
     const results = {};
     const response = {};
     response[this.key] = results;
-    console.log('keys = %s', JSON.stringify(keys));
+    // console.log('keys = %s', JSON.stringify(keys));
     if (keys) {
       keys = expandKeys(keys);
       response.keys = keys;
       compactorInEffect = formatUsing.bind(null, keys.map(makeGetter));
     }
 
+    const fromDate = criteria.tmend.$gte.getTime();
     Object.keys(rowsByKey).forEach((k) => {
-      const values = this.merger(mapHistoricalValuesToCompactForm(rowsByKey[k], compactorInEffect));
+      const values = this.merger(mapHistoricalValuesToCompactForm(
+        rowsByKey[k],
+        compactorInEffect,
+        (row) => ((row[0] * 1000) >= fromDate) // filter out values that are less than the fromDate
+      ));
       results[k] = values;
     });
     return response;
