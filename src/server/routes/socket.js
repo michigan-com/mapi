@@ -67,7 +67,7 @@ function registerBreakingNewsEvent(socket) {
   }));
 }
 
-function registerStatsEvents(socket) {
+function registerAnalyticsSockets(socket) {
   const statsSocketEvents = [{
     eventName: 'stats-domains',
     statsObj: analytics.loadDomainStats,
@@ -80,22 +80,7 @@ function registerStatsEvents(socket) {
   }, {
     eventName: 'stats-authors',
     statsObj: analytics.loadAuthorStats,
-  }];
-
-  for (const event of statsSocketEvents) {
-    socket.on(`get-${event.eventName}`, async (data) => {
-      try {
-        const response = await event.statsObj.getHistoricalValues(data);
-        socket.emit(`got-${event.eventName}`, response);
-      } catch (e) {
-        socket.emit(`error-${event.eventName}`, { error: e });
-      }
-    });
-  }
-}
-
-function registerTotalsEvents(socket) {
-  const totalsSocketEvents = [{
+  }, {
     eventName: 'totals-domain',
     totalsObj: analytics.loadDomainTotals,
   }, {
@@ -106,10 +91,10 @@ function registerTotalsEvents(socket) {
     totalsObj: analytics.loadAuthorTotals,
   }];
 
-  for (const event of totalsSocketEvents) {
+  for (const event of statsSocketEvents) {
     socket.on(`get-${event.eventName}`, async (data) => {
       try {
-        const response = await event.totalsObj.getTotalValues(data);
+        const response = await event.statsObj.runQuery(data);
         socket.emit(`got-${event.eventName}`, response);
       } catch (e) {
         socket.emit(`error-${event.eventName}`, { error: e });
@@ -117,7 +102,6 @@ function registerTotalsEvents(socket) {
     });
   }
 }
-
 export function newSocketConnection(socket) {
   // Older stuff
   registerArticleEvent(socket);
@@ -130,6 +114,5 @@ export function newSocketConnection(socket) {
   registerBreakingNewsEvent(socket);
 
   // newer stuff
-  registerStatsEvents(socket);
-  registerTotalsEvents(socket);
+  registerAnalyticsSockets(socket);
 }

@@ -15,7 +15,7 @@ export const DEFAULT_ANALYTICS_QUERY_PARAMS = {
   limit: null,
   keys: null,
   sort: '',
-  today: 0, // treating this like a boolean
+  start: null,
 };
 
 const identity = (v) => (v);
@@ -146,7 +146,7 @@ function makeGetter(key) {
   };
 }
 
-class HistoricalValueQuery {
+class AnalyticsQuery {
   constructor(model, key, compactor = null, merger = identity) {
     this.model = model;
     this.key = key;
@@ -158,27 +158,19 @@ class HistoricalValueQuery {
 
   async expressRoute(req, res, next) {
     try {
-      const response = await this.getHistoricalValues(req.query);
+      const response = await this.runQuery(req.query);
       return res.json(response);
     } catch (e) {
       return next(makeJSONError(400, e));
     }
   }
 
-  /**
-   * Get historical values for a given model. Will return
-   */
-  async getHistoricalValues(reqParams) {
-    const query = { ...DEFAULT_ANALYTICS_QUERY_PARAMS, ...reqParams };
-
-    let compactorInEffect = this.compactor;
-
-    const days = query.days;
-
+  formatQueryParams(query) {
+    const days = query.days || 14;
+    const start = parseInt(query.start, 10);
     let fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    if (query.today === '1') {
-      fromDate = new Date();
-      fromDate.setHours(0); fromDate.setMinutes(0); fromDate.setSeconds(0);
+    if (!isNaN(start)) {
+      fromDate = new Date(start);
     }
     console.log(fromDate);
 
@@ -191,6 +183,21 @@ class HistoricalValueQuery {
         criteria.domain = { $in: domains };
       }
     }
+    return criteria;
+  }
+
+}
+
+class HistoricalValueQuery extends AnalyticsQuery {
+
+  /**
+   * Get historical values for a given model. Will return
+   */
+  async runQuery(reqParams) {
+    const query = { ...DEFAULT_ANALYTICS_QUERY_PARAMS, ...reqParams };
+    const criteria = this.formatQueryParams(query);
+
+    let compactorInEffect = this.compactor;
 
     let limit = 1000;
     if (query.limit != null) {
@@ -237,7 +244,7 @@ class HistoricalValueQuery {
     }
     let rows = await q.exec();
     if (!rows) {
-      throw new Error(`Could not find rows from date ${fromDate}`);
+      throw new Error(`Could not find rows from date ${criteria.tmstart.$gte}`);
     }
     rows = rows.map((row) => row.toObject());
 
@@ -272,43 +279,11 @@ class HistoricalValueQuery {
   }
 }
 
-class TotalsQuery {
-  constructor(model, key) {
-    this.model = model;
-    this.key = key;
+class TotalsQuery extends AnalyticsQuery {
 
-    this.expressRoute = this.expressRoute.bind(this);
-  }
-
-  async expressRoute(req, res, next) {
-    try {
-      const response = await this.getTotalValues(req.query);
-      return res.json(response);
-    } catch (e) {
-      return next(makeJSONError(400, e));
-    }
-  }
-
-  async getTotalValues(reqParams) {
+  async runQuery(reqParams) {
     const query = { ...DEFAULT_ANALYTICS_QUERY_PARAMS, ...reqParams };
-
-    const days = query.days || 14;
-    let fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    if (query.today === '1') {
-      fromDate = new Date();
-      fromDate.setHours(0); fromDate.setMinutes(0); fromDate.setSeconds(0);
-    }
-    console.log(fromDate);
-
-    const criteria = { tmstart: { $gte: fromDate } };
-    if (query.domains != null) {
-      const domains = (`${query.domains}`).trim().split(/\s*,\s*/);
-      if (domains.length === 1) {
-        criteria.domain = domains[0];
-      } else {
-        criteria.domain = { $in: domains };
-      }
-    }
+    const criteria = this.formatQueryParams(query);
 
     let limit = 1000;
     if (query.limit != null) {
@@ -352,7 +327,7 @@ class TotalsQuery {
     }
     let rows = await q.exec();
     if (!rows) {
-      throw new Error(`Could not find rows from date ${fromDate}`);
+      throw new Error(`Could not find rows from date ${criteria.tmstart.$gte}`);
     }
     rows = rows.map((row) => row.toObject());
 
