@@ -95,6 +95,7 @@ function registerAnalyticsSockets(socket) {
     socket.on(`get-${event.eventName}`, async (data) => {
       try {
         const response = await event.statsObj.runQuery(data);
+        response.eventKey = data.eventKey || event.eventName;
         socket.emit(`got-${event.eventName}`, response);
       } catch (e) {
         socket.emit(`error-${event.eventName}`, { error: e });
