@@ -163,6 +163,8 @@ class AnalyticsQuery {
       const response = await this.runQuery(req.query);
       return res.json(response);
     } catch (e) {
+      console.error(e);
+      console.trace(e);
       return next(makeJSONError(400, e));
     }
   }
@@ -333,7 +335,7 @@ class TotalsQuery extends AnalyticsQuery {
     }
     let rows = await q.exec();
     if (!rows.length) {
-      throw new Error(`Could not find rows from date ${criteria.tmstart.$gte}`);
+      throw new Error(`Could not find rows from date ${criteria.tmend.$gte}`);
     }
     rows = rows.map((row) => row.toObject());
 
