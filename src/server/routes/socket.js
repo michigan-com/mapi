@@ -70,31 +70,31 @@ function registerBreakingNewsEvent(socket) {
 function registerAnalyticsSockets(socket) {
   const statsSocketEvents = [{
     eventName: 'stats-domains',
-    statsObj: analytics.loadDomainStats,
+    analyticsObj: analytics.loadDomainStats,
   }, {
     eventName: 'stats-referrers',
-    statsObj: analytics.loadReferrers,
+    analyticsObj: analytics.loadReferrers,
   }, {
     eventName: 'stats-articles',
-    statsObj: analytics.loadArticleStats,
+    analyticsObj: analytics.loadArticleStats,
   }, {
     eventName: 'stats-authors',
-    statsObj: analytics.loadAuthorStats,
+    analyticsObj: analytics.loadAuthorStats,
   }, {
     eventName: 'totals-domain',
-    totalsObj: analytics.loadDomainTotals,
+    analyticsObj: analytics.loadDomainTotals,
   }, {
     eventName: 'totals-articles',
-    totalsObj: analytics.loadArticleStats,
+    analyticsObj: analytics.loadArticleStats,
   }, {
     eventName: 'totals-authors',
-    totalsObj: analytics.loadAuthorTotals,
+    analyticsObj: analytics.loadAuthorTotals,
   }];
 
   for (const event of statsSocketEvents) {
     socket.on(`get-${event.eventName}`, async (data) => {
       try {
-        const response = await event.statsObj.runQuery(data);
+        const response = await event.analyticsObj.runQuery(data);
         response.eventKey = data.eventKey || event.eventName;
         socket.emit(`got-${event.eventName}`, response);
       } catch (e) {
