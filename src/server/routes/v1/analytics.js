@@ -16,6 +16,7 @@ export const DEFAULT_ANALYTICS_QUERY_PARAMS = {
   keys: null,
   sort: '',
   start: null,
+  end: null,
 };
 
 const identity = (v) => (v);
@@ -186,6 +187,13 @@ class AnalyticsQuery {
         criteria.domain = { $in: domains };
       }
     }
+
+    const end = parseInt(query.end, 10);
+    if (!isNaN(end)) {
+      const endDate = new Date(end);
+      criteria.tmend.$lte = endDate;
+    }
+
     return criteria;
   }
 
