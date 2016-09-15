@@ -17,6 +17,7 @@ export const DEFAULT_ANALYTICS_QUERY_PARAMS = {
   sort: '',
   start: null,
   end: null,
+  filter: null,
 };
 
 const identity = (v) => (v);
@@ -178,7 +179,7 @@ class AnalyticsQuery {
       fromDate = new Date(start);
     }
 
-    const criteria = { tmend: { $gte: fromDate } };
+    let criteria = { tmend: { $gte: fromDate } };
     if (query.domains != null) {
       const domains = (`${query.domains}`).trim().split(/\s*,\s*/);
       if (domains.length === 1) {
@@ -194,9 +195,20 @@ class AnalyticsQuery {
       criteria.tmend.$lte = endDate;
     }
 
+    let filter = null;
+    if (query.filter !== null) {
+      try {
+        filter = JSON.parse(query.filter);
+        criteria = { ...criteria, ...filter };
+        console.log(criteria);
+      } catch (e) {
+        console.log('filter parsing error');
+        console.log(e);
+        filter = null;
+      }
+    }
     return criteria;
   }
-
 }
 
 class HistoricalValueQuery extends AnalyticsQuery {
