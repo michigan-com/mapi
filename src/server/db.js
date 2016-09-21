@@ -26,23 +26,40 @@ export let Article = mongoose.model('Article', new Schema({
     index: true,
   },
 }), 'Article');
-export let Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
-export let Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
-export let Topgeo = mongoose.model('Topgeo', new Schema({}), 'Topgeo');
-export let Referrers = mongoose.model('Referrers', new Schema({}), 'Referrers');
-export let Recent = mongoose.model('Recent', new Schema({}), 'Recent');
-export let TrafficSeries = mongoose.model('TrafficSeries', new Schema({}), 'TrafficSeries');
-export let ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
-export let BreakingNews = mongoose.model('BreakingNews', new Schema({}), 'BreakingNews');
+export const Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
+export const Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
+export const Topgeo = mongoose.model('Topgeo', new Schema({}), 'Topgeo');
+export const Referrers = mongoose.model('Referrers', new Schema({}), 'Referrers');
+export const Recent = mongoose.model('Recent', new Schema({}), 'Recent');
+export const TrafficSeries = mongoose.model('TrafficSeries', new Schema({}), 'TrafficSeries');
+export const ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
+export const BreakingNews = mongoose.model('BreakingNews', new Schema({}), 'BreakingNews');
 
-export let PlatformStatsDaily = mongoose.model('PlatformStatsDaily', new Schema({}), 'PlatformStatsDaily');
-export let DomainDaily = mongoose.model('DomainDaily', new Schema({}), 'DomainDaily');
-export let AuthorDaily = mongoose.model('AuthorDaily', new Schema({}), 'AuthorDaily');
-export let ArticleDaily = mongoose.model('ArticleDaily', new Schema({}), 'ArticleDaily');
-export let DomainTotals = mongoose.model('DomainTotals', new Schema({}), 'DomainTotals');
-export let AuthorTotals = mongoose.model('AuthorTotals', new Schema({}), 'AuthorTotals');
-export let ArticleTotals = mongoose.model('ArticleTotals', new Schema({}), 'ArticleTotals');
-export let ReferrersDaily = mongoose.model('ReferrersDaily', new Schema({}), 'ReferrersDaily');
+export const PlatformStatsDaily = mongoose.model('PlatformStatsDaily', new Schema({}), 'PlatformStatsDaily');
+export const DomainDaily = mongoose.model('DomainDaily', new Schema({}), 'DomainDaily');
+export const AuthorDaily = mongoose.model('AuthorDaily', new Schema({}), 'AuthorDaily');
+export const ArticleDaily = mongoose.model('ArticleDaily', new Schema({
+  last: {
+    v: {
+      type: Number,
+      index: true,
+    },
+    recirc: {
+      type: Number,
+      index: true,
+    },
+    engtm: {
+      avg: {
+        type: Number,
+        index: true,
+      },
+    },
+  },
+}), 'ArticleDaily');
+export const DomainTotals = mongoose.model('DomainTotals', new Schema({}), 'DomainTotals');
+export const AuthorTotals = mongoose.model('AuthorTotals', new Schema({}), 'AuthorTotals');
+export const ArticleTotals = mongoose.model('ArticleTotals', new Schema({}), 'ArticleTotals');
+export const ReferrersDaily = mongoose.model('ReferrersDaily', new Schema({}), 'ReferrersDaily');
 
 const defaults = {
   server: {
