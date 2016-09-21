@@ -15,8 +15,12 @@ export let Recipe = mongoose.model('Recipe', new Schema({}), 'Recipe');
 export let Article = mongoose.model('Article', new Schema({
   inserted_at: {
     type: Date,
-    expires: '90d'
-  }
+    expires: '90d',
+  },
+  created_at: {
+    type: Date,
+    index: true,
+  },
 }), 'Article');
 export let Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
 export let Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
@@ -38,28 +42,28 @@ export let ReferrersDaily = mongoose.model('ReferrersDaily', new Schema({}), 'Re
 
 const defaults = {
   server: {
-    socketOptions: { keepAlive: 1 }
-  }
+    socketOptions: { keepAlive: 1 },
+  },
 };
 
-export function connect(dbString, options=defaults) {
+export function connect(dbString, options = defaults) {
   if (!dbString) throw new Error('dbString must be defined');
 
   logger(`Connecting to: ${dbString}`);
-  return new Promise(function(resolve, reject) {
-    mongoose.connect(dbString, options, function(err) {
+  return new Promise(function (resolve, reject) {
+    mongoose.connect(dbString, options, function (err) {
       if (err) reject(err);
       logger('Connected to mongodb!');
       setupCollections();
       resolve(true);
-    })
+    });
   });
 }
 
 export function disconnect() {
   logger('Disconnecting from mongodb ...');
-  return new Promise(function(resolve, reject) {
-    mongoose.disconnect(function(err) {
+  return new Promise(function (resolve, reject) {
+    mongoose.disconnect(function (err) {
       if (err) reject(err);
       logger('Disconnected from mongodb!');
       resolve(true);
