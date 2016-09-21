@@ -21,6 +21,10 @@ export let Article = mongoose.model('Article', new Schema({
     type: Date,
     index: true,
   },
+  article_id: {
+    type: Number,
+    index: true,
+  },
 }), 'Article');
 export let Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
 export let Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
