@@ -266,9 +266,9 @@ class HistoricalValueQuery extends AnalyticsQuery {
       q = q.limit(limit);
     }
     let rows = await q.exec();
-    if (!rows.length) {
-      throw new Error(`Could not find rows from date ${criteria.tmend.$gte}`);
-    }
+    // if (!rows.length) {
+    //   throw new Error(`Could not find rows from date ${criteria.tmend.$gte}`);
+    // }
     rows = rows.map((row) => row.toObject());
 
     rows.sort((a, b) => {
