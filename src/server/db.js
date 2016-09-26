@@ -36,7 +36,22 @@ export const ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}),
 export const BreakingNews = mongoose.model('BreakingNews', new Schema({}), 'BreakingNews');
 
 export const PlatformStatsDaily = mongoose.model('PlatformStatsDaily', new Schema({}), 'PlatformStatsDaily');
-export const DomainDaily = mongoose.model('DomainDaily', new Schema({}), 'DomainDaily');
+export const DomainDaily = mongoose.model('DomainDaily', new Schema({
+  last: {
+    article: {
+      type: Number,
+      index: true,
+    },
+    recirc: {
+      type: Number,
+      index: true,
+    },
+    v: {
+      type: Number,
+      index: true,
+    },
+  },
+}), 'DomainDaily');
 export const AuthorDaily = mongoose.model('AuthorDaily', new Schema({}), 'AuthorDaily');
 export const ArticleDaily = mongoose.model('ArticleDaily', new Schema({
   last: {
@@ -54,6 +69,7 @@ export const ArticleDaily = mongoose.model('ArticleDaily', new Schema({
         index: true,
       },
     },
+
   },
 }), 'ArticleDaily');
 export const DomainTotals = mongoose.model('DomainTotals', new Schema({}), 'DomainTotals');
