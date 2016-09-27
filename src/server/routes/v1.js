@@ -29,6 +29,25 @@ router.get('/article/:id/', async function(req, res, next) {
   res.json(article);
 });
 
+router.get('/articles/:idList/', async function(req, res) {
+  const articleIds = req.params.idList.split(',');
+
+  const articleDocs = await Article.find({
+    article_id: {
+      $in: articleIds,
+    },
+  });
+
+  const articles = articleDocs.reduce((p, c) => {
+    p[parseInt(c.article_id, 10)] = c;
+    return p;
+  }, {});
+
+  res.json({
+    articles,
+  });
+});
+
 router.get('/article/', async function(req, res, next) {
   // endpoint for frequency count in dashboard, for now
   let fromDate = new Date();
