@@ -20,11 +20,12 @@ function getSnapshot(model, data) {
       );
 
       var time = new Date();
-      const snapshotData = result.map(r => r[0].toObject()).reduce((a, v) => {
-        a[v.d] = v.v;
-        time = v.tm;
-        return a;
-      }, {});
+      const snapshotData = result.filter((r) => (!!r[0])).map(r => r[0].toObject())
+        .reduce((a, v) => {
+          a[v.d] = v.v;
+          time = v.tm;
+          return a;
+        }, {});
       resolve({ data: snapshotData, time, domains });
     } catch (e) {
       console.error(e);
