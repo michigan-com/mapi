@@ -89,8 +89,8 @@ router.get('/stats/authors/', Catch(analytics.loadAuthorStats.expressRoute));
 router.get('/stats/referrers/', Catch(analytics.loadReferrers.expressRoute));
 
 router.get('/totals/domains/', Catch(analytics.loadDomainTotals.expressRoute));
-router.get('/totals/articles/', Catch(analytics.loadArticleTotals.expressRoute));
-router.get('/totals/authors/', Catch(analytics.loadAuthorTotals.expressRoute));
+// router.get('/totals/articles/', Catch(analytics.loadArticleTotals.expressRoute));
+// router.get('/totals/authors/', Catch(analytics.loadAuthorTotals.expressRoute));
 
 /**
  * Fetch a Chartbeat Snapshot

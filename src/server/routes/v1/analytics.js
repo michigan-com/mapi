@@ -20,7 +20,7 @@ export const DEFAULT_ANALYTICS_QUERY_PARAMS = {
   filter: null,
 };
 
-const identity = (v) => (v);
+const identity = (v) => (v.v);
 
 // function formatReferrers(v) {
 //   let map = {};
@@ -126,20 +126,28 @@ function makeGetter(key) {
   const idx = key.indexOf('.');
   if (idx < 0) {
     return (obj) => {
-      if (!obj.hasOwnProperty(key)) {
+      if (obj.hasOwnProperty(key)) {
+        return formatValue(obj[key]);
+      } else if (obj.v.hasOwnProperty(key)) {
+        return formatValue(obj.v[key]);
+      } else {
         return null;
       }
-      return formatValue(obj[key]);
     };
   }
   const first = key.substr(0, idx);
   const second = key.substr(idx + 1);
 
   return (obj) => {
-    if (!obj.hasOwnProperty(first)) {
+    let subobj = {};
+
+    if (obj.hasOwnProperty(first)) {
+      subobj = obj[first];
+    } else if (obj.v.hasOwnProperty(first)) {
+      subobj = obj.v[first];
+    } else {
       return null;
     }
-    const subobj = obj[first];
     if (typeof subobj !== 'object' || subobj === null) {
       return null;
     }
@@ -171,6 +179,9 @@ class AnalyticsQuery {
     }
   }
 
+}
+
+class HistoricalValueQuery extends AnalyticsQuery {
   formatQueryParams(query) {
     const days = query.days || 14;
     const start = parseInt(query.start, 10);
@@ -179,20 +190,16 @@ class AnalyticsQuery {
       fromDate = new Date(start);
     }
 
-    let criteria = { tmend: { $gte: fromDate } };
+    let criteria = { tm: { $gte: fromDate } };
     if (query.domains != null) {
       const domains = (`${query.domains}`).trim().split(/\s*,\s*/);
       if (domains.length === 1) {
-        criteria.domain = domains[0];
+        criteria.d = domains[0];
       } else {
-        criteria.domain = { $in: domains };
+        criteria.d = { $in: domains };
       }
-    }
-
-    const end = parseInt(query.end, 10);
-    if (!isNaN(end)) {
-      const endDate = new Date(end);
-      criteria.tmend.$lte = endDate;
+    } else {
+      throw new Error('Domain key not specified');
     }
 
     let filter = null;
@@ -200,7 +207,6 @@ class AnalyticsQuery {
       try {
         filter = JSON.parse(query.filter);
         criteria = { ...criteria, ...filter };
-        console.log(criteria);
       } catch (e) {
         console.log('filter parsing error');
         console.log(e);
@@ -209,9 +215,6 @@ class AnalyticsQuery {
     }
     return criteria;
   }
-}
-
-class HistoricalValueQuery extends AnalyticsQuery {
 
   /**
    * Get historical values for a given model. Will return
@@ -294,20 +297,70 @@ class HistoricalValueQuery extends AnalyticsQuery {
       compactorInEffect = formatUsing.bind(null, keys.map(makeGetter));
     }
 
-    const fromDate = criteria.tmend.$gte.getTime();
+    let funcs;
+    if (keys) {
+      keys = expandKeys(keys);
+      response.keys = keys;
+      funcs = keys.map(makeGetter);
+    }
+
     Object.keys(rowsByKey).forEach((k) => {
-      const values = this.merger(mapHistoricalValuesToCompactForm(
-        rowsByKey[k],
-        compactorInEffect,
-        (row) => ((row[0] * 1000) >= fromDate) // filter out values that are less than the fromDate
-      ));
+      const rowsByKeyRow = rowsByKey[k];
+      const values = (funcs ? formatTotals(rowsByKeyRow, funcs) : rowsByKeyRow);
       results[k] = values;
     });
+    // Object.keys(rowsByKey).forEach((k) => {
+    //   const values = this.merger(mapHistoricalValuesToCompactForm(
+    //     rowsByKey[k],
+    //     compactorInEffect,
+    //     (row) => ((row[0] * 1000) >= fromDate) // filter out values that are less than the fromDate
+    //   ));
+    //   results[k] = values;
+    // });
     return response;
   }
 }
 
 class TotalsQuery extends AnalyticsQuery {
+  formatQueryParams(query) {
+    const days = query.days || 14;
+    const start = parseInt(query.start, 10);
+    let fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    if (!isNaN(start)) {
+      fromDate = new Date(start);
+    }
+
+    let criteria = { tmend: { $gte: fromDate } };
+    if (query.domains != null) {
+      const domains = (`${query.domains}`).trim().split(/\s*,\s*/);
+      if (domains.length === 1) {
+        criteria.d = domains[0];
+      } else {
+        criteria.d = { $in: domains };
+      }
+    } else {
+      throw new Error('Domain key not specified');
+    }
+
+    const end = parseInt(query.end, 10);
+    if (!isNaN(end)) {
+      const endDate = new Date(end);
+      criteria.tmend.$lte = endDate;
+    }
+
+    let filter = null;
+    if (query.filter !== null) {
+      try {
+        filter = JSON.parse(query.filter);
+        criteria = { ...criteria, ...filter };
+      } catch (e) {
+        console.log('filter parsing error');
+        console.log(e);
+        filter = null;
+      }
+    }
+    return criteria;
+  }
 
   async runQuery(reqParams) {
     const query = { ...DEFAULT_ANALYTICS_QUERY_PARAMS, ...reqParams };
@@ -371,7 +424,6 @@ class TotalsQuery extends AnalyticsQuery {
       const k = row[this.key]
       ;(rowsByKey[k] || (rowsByKey[k] = [])).push(row);
     });
-
     const results = {};
     const response = {};
     response[this.key] = results;
@@ -410,12 +462,12 @@ class TotalsQuery extends AnalyticsQuery {
 //   }
 // }
 
-export const loadDomainStats = new HistoricalValueQuery(db.DomainDaily, 'domain');
-export const loadArticleStats = new HistoricalValueQuery(db.ArticleDaily, 'aid');
-export const loadAuthorStats = new HistoricalValueQuery(db.AuthorDaily, 'author');
-export const loadReferrers = new HistoricalValueQuery(db.ReferrersDaily, 'domain',
+export const loadDomainStats = new HistoricalValueQuery(db.QuickStatsV3, 'd');
+export const loadArticleStats = new HistoricalValueQuery(db.ArticlesV3, 'aid');
+export const loadAuthorStats = new HistoricalValueQuery(db.AuthorV3, 'author');
+export const loadReferrers = new HistoricalValueQuery(db.ReferrersDaily, 'd',
                                                     identity, mergeReferrers);
 
-export const loadDomainTotals = new TotalsQuery(db.DomainTotals, 'domain');
-export const loadArticleTotals = new TotalsQuery(db.ArticleTotals, 'aid');
-export const loadAuthorTotals = new TotalsQuery(db.AuthorTotals, 'author');
+export const loadDomainTotals = new TotalsQuery(db.DomainTotals, 'd');
+// export const loadArticleTotals = new TotalsQuery(db.ArticleTotals, 'aid');
+// export const loadAuthorTotals = new TotalsQuery(db.AuthorTotals, 'author');
