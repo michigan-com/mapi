@@ -274,12 +274,12 @@ class HistoricalValueQuery extends AnalyticsQuery {
     // }
     rows = rows.map((row) => row.toObject());
 
-    rows.sort((a, b) => {
-      if (a.tmstart < b.tmstart) return -1;
-      else if (a.tmstart > b.tmstart) return 1;
-
-      return 0;
-    });
+    // rows.sort((a, b) => {
+    //   if (a.tmstart < b.tmstart) return -1;
+    //   else if (a.tmstart > b.tmstart) return 1;
+    //
+    //   return 0;
+    // });
 
     const rowsByKey = {};
     rows.forEach((row) => {
@@ -412,12 +412,12 @@ class TotalsQuery extends AnalyticsQuery {
     // }
     rows = rows.map((row) => row.toObject());
 
-    rows.filter((a) => (a.tm))
-      .sort((a, b) => {
-        if (a.tmstart < b.tmstart) return -1;
-        else if (a.tmstart > b.tmstart) return 1;
-        return 0;
-      });
+    // rows.filter((a) => (a.tm))
+    //   .sort((a, b) => {
+    //     if (a.tmstart < b.tmstart) return -1;
+    //     else if (a.tmstart > b.tmstart) return 1;
+    //     return 0;
+    //   });
 
     const rowsByKey = {};
     rows.forEach((row) => {
