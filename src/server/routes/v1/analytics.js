@@ -255,7 +255,7 @@ class HistoricalValueQuery extends AnalyticsQuery {
         f = f.substr(1);
       }
       sort = {};
-      sort[`last.${f}`] = o;
+      sort[`${f}`] = o;
     }
 
     let q = this.model.find(criteria);
