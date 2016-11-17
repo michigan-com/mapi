@@ -35,8 +35,25 @@ export const TrafficSeries = mongoose.model('TrafficSeries', new Schema({}), 'Tr
 export const ReferrerHistory = mongoose.model('ReferrerHistory', new Schema({}), 'ReferrerHistory');
 export const BreakingNews = mongoose.model('BreakingNews', new Schema({}), 'BreakingNews');
 
-export const TopPagesV3 = mongoose.model('TopPagesV3', new Schema({}), 'TopPagesV3');
+export const TopPagesV3 = mongoose.model('TopPagesV3', new Schema({
+  d: {
+    type: String,
+    index: true,
+  },
+  tm: {
+    type: Date,
+    index: true,
+  },
+}), 'TopPagesV3');
 export const QuickStatsV3 = mongoose.model('QuickStatsV3', new Schema({
+  d: {
+    type: String,
+    index: true,
+  },
+  tm: {
+    type: Date,
+    index: true,
+  },
   v: {
     article: {
       type: Number,
@@ -52,10 +69,46 @@ export const QuickStatsV3 = mongoose.model('QuickStatsV3', new Schema({
     },
   },
 }), 'QuickStatsV3');
-export const TopGeoV3 = mongoose.model('TopGeoV3', new Schema({}), 'TopGeoV3');
-export const ReferrersV3 = mongoose.model('ReferrersV3', new Schema({}), 'ReferrersV3');
-export const RecentV3 = mongoose.model('RecentsV3', new Schema({}), 'RecentsV3');
-export const TrafficSeriesDailyV3 = mongoose.model('TrafficSeriesDailyV3', new Schema({}), 'TrafficSeriesDailyV3');
+export const TopGeoV3 = mongoose.model('TopGeoV3', new Schema({
+  d: {
+    type: String,
+    index: true,
+  },
+  tm: {
+    type: Date,
+    index: true,
+  },
+}), 'TopGeoV3');
+export const ReferrersV3 = mongoose.model('ReferrersV3', new Schema({
+  d: {
+    type: String,
+    index: true,
+  },
+  tm: {
+    type: Date,
+    index: true,
+  },
+}), 'ReferrersV3');
+export const RecentV3 = mongoose.model('RecentsV3', new Schema({
+  d: {
+    type: String,
+    index: true,
+  },
+  tm: {
+    type: Date,
+    index: true,
+  },
+}), 'RecentsV3');
+export const TrafficSeriesDailyV3 = mongoose.model('TrafficSeriesDailyV3', new Schema({
+  d: {
+    type: String,
+    index: true,
+  },
+  tm: {
+    type: Date,
+    index: true,
+  },
+}), 'TrafficSeriesDailyV3');
 
 export const PlatformStatsDaily = mongoose.model('PlatformStatsDaily', new Schema({}), 'PlatformStatsDaily');
 export const AuthorDaily = mongoose.model('AuthorsV3', new Schema({}), 'AuthorsV3');
