@@ -51,10 +51,17 @@ router.get('/articles/:idList/', async function(req, res) {
 router.get('/article/', async function(req, res, next) {
   // endpoint for frequency count in dashboard, for now
   let fromDate = new Date();
+  let domains = [];
   if (req.query.fromDate) fromDate = new Date(req.query.fromDate);
+  if (req.query.domains) domains = req.query.domains.split(',');
 
   var queryDate = fromDate.toUTCString();
-  let articles = await Article.find({ created_at: { '$gt': fromDate } }).select('-body -summary').sort('-timestamp').exec();
+  const filterValues = { created_at: { $gt: fromDate } };
+  if (domains.length !== 0) filterValues.domain = { $in: domains };
+  const articles = await Article.find(filterValues)
+                              .select('-body -summary')
+                              .sort('-timestamp')
+                              .exec();
   if (!articles) {
     let err = new Error(`Could not find articles with on date ${fromDate}`);
     err.status = 404;
@@ -62,7 +69,7 @@ router.get('/article/', async function(req, res, next) {
     return next(err);
   }
 
-  res.json(articles);
+  res.json({ articles });
 });
 
 router.get('/history/', Catch(async function(req, res) {
