@@ -52,7 +52,12 @@ router.get('/article/', async function(req, res, next) {
   // endpoint for frequency count in dashboard, for now
   let fromDate = new Date();
   let domains = [];
-  if (req.query.fromDate) fromDate = new Date(req.query.fromDate);
+
+  if (req.query.fromDate) {
+    const parsedTime = parseInt(req.query.fromDate, 10);
+    if (isNaN(parsedTime)) fromDate = new Date(req.query.fromDate);
+    else fromDate = new Date(parsedTime);
+  }
   if (req.query.domains) domains = req.query.domains.split(',');
 
   var queryDate = fromDate.toUTCString();
