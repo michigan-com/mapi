@@ -57,33 +57,49 @@ function RemoveExtraSpace(arr) {
  *
  */
 function v1NewsMongoFilter(sites=[], sections=[], hasPhoto=false, next=()=> {}) {
-  let siteNames = [for (site of Sites) if (site) StripHost(site)];
   let mongoFilter = {};
 
   RemoveExtraSpace(sites);
   RemoveExtraSpace(sections);
 
-  // Parse the sites params
-  let invalidSites = [];
-  for (let i = 0; i < sites.length; i++) {
-    let site = sites[i];
-    if (siteNames.indexOf(site) == -1 && site != 'all') {
-      invalidSites.push(site)
+  let isUsingDomains = sites.some(isDomain)
+  if (isUsingDomains) {
+    if (!sites.every(isDomain)) {
+      var err = new Error(`Cannot mix domains and legacy site names`);
+      err.status = 422;
+      err.type = 'json';
+      next(err);
+      return;
     }
-  }
 
-  if (invalidSites.length) {
-    // unprocessable, throw correct response code
-    let sites = invalidSites.join(', ');
-    var err = new Error(`Invalid query argument, site '${sites}' not allowed`);
-    err.status = 422;
-    err.type = 'json';
-    next(err);
-    return;
-  }
+    if (sites.length) {
+      mongoFilter['domain'] = { $in: sites };
+    }
+  } else {
+    let siteNames = [for (site of Sites) if (site) StripHost(site)];
 
-  if (sites.length && sites.indexOf('all') == -1) {
-    mongoFilter['source'] = { $in: sites };
+    // Parse the sites params
+    let invalidSites = [];
+    for (let i = 0; i < sites.length; i++) {
+      let site = sites[i];
+      if (siteNames.indexOf(site) == -1 && site != 'all') {
+        invalidSites.push(site)
+      }
+    }
+
+    if (invalidSites.length) {
+      // unprocessable, throw correct response code
+      let sites = invalidSites.join(', ');
+      var err = new Error(`Invalid query argument, site '${sites}' not allowed`);
+      err.status = 422;
+      err.type = 'json';
+      next(err);
+      return;
+    }
+
+    if (sites.length && sites.indexOf('all') == -1) {
+      mongoFilter['source'] = { $in: sites };
+    }
   }
 
   // Parse the section params
@@ -116,6 +132,10 @@ function v1NewsMongoFilter(sites=[], sections=[], hasPhoto=false, next=()=> {}) 
   }
 
   return mongoFilter
+}
+
+function isDomain(site) {
+  return site.indexOf('.') >= 0
 }
 
 module.exports = {

@@ -48,34 +48,93 @@ router.get('/articles/:idList/', async function(req, res) {
   });
 });
 
-router.get('/article/', async function(req, res, next) {
+router.get('/article/', Catch(fetchAricles))
+router.get('/articles/', Catch(fetchAricles))
+
+async function fetchAricles(req, res, next) {
   // endpoint for frequency count in dashboard, for now
-  let fromDate = new Date();
-  let domains = [];
+  // also for the browser extension
+  
+  let filter = {}
 
-  if (req.query.fromDate) {
-    const parsedTime = parseInt(req.query.fromDate, 10);
-    if (isNaN(parsedTime)) fromDate = new Date(req.query.fromDate);
-    else fromDate = new Date(parsedTime);
+  let domains = []
+  if (req.query.domains) {
+    domains = req.query.domains.split(',')
   }
-  if (req.query.domains) domains = req.query.domains.split(',');
+  if (domains.length > 0) {
+    filter['domain'] = { $in: domains }
+  }
 
-  var queryDate = fromDate.toUTCString();
-  const filterValues = { created_at: { $gt: fromDate } };
-  if (domains.length !== 0) filterValues.domain = { $in: domains };
-  const articles = await Article.find(filterValues)
-                              .select('-body -summary')
+  let fromDate = parseQueryDate(req.query.fromDate)
+  if (fromDate) {
+    filter['created_at'] = { $gt: fromDate }
+  }
+
+  if (req.query.photo == '1') {
+    filter['photo'] = { $ne: {} }
+  }
+
+  // see lib/constant.js for valid sections
+  if (req.query.sections) {
+    let sections = req.query.sections.split(',')
+    filter['section'] = { $in: sections }
+  }
+
+  let select = {body: -1, summary: -1}
+  if (req.query.select) {
+    let clauses = req.query.select.split(',')
+    for (let clause of clauses) {
+      let included = 1
+      if (clause[0] == '-') {
+        included = -1
+        clause = clause.substr(1)
+      }
+      select[clause] = included
+    }
+  }
+  
+  let limit = 1000
+  if (req.query.limit) {
+    limit = parseInt(req.query.limit, 10)
+    if (isNaN(limit)) {
+      throw httpError(400, 'invalid limit')
+    }
+  }
+
+  let articles = await Article.find(filter)
+                              .select(select)
+                              .limit(limit)
                               .sort('-timestamp')
                               .exec();
-  if (!articles) {
-    let err = new Error(`Could not find articles with on date ${fromDate}`);
-    err.status = 404;
-    err.type = 'json';
-    return next(err);
+  res.json({ articles });
+}
+
+function parseQueryDate(queryValue) {
+  if (queryValue == null) {
+    return null
   }
 
-  res.json({ articles });
-});
+  let timestamp = parseInt(queryValue, 10)
+  if (isNaN(timestamp)) {
+    timestamp = Date.parse(queryValue)
+    if (isNaN(timestamp)) {
+      throw httpError(400, `Invalid date`)
+    }
+    return new Date(queryValue);
+  } else {
+    if (timestamp < 10000000000 /* 1970-04-26 */) {
+      timestamp *= 1000   // must be in seconds
+    }
+    return new Date(timestamp)
+  }
+}
+
+function httpError(status, message) {
+  var err = new Error(`Invalid date`)
+  err.status = 400
+  err.type = 'json'
+  return err
+}
 
 router.get('/history/', Catch(async function(req, res) {
   let starting = new Date();
@@ -155,6 +214,7 @@ async function news(req, res, next) {
   let requestedSites = 'site' in req.params ? req.params.site.split(',') : [];
   let requestedSections = 'section' in req.params ? req.params.section.split(',') : [];
   let limit = 'limit' in req.query ? req.query.limit : DEFAULT_LIMIT;
+  let fromDate = parseQueryDate(req.query.fromDate)
   // TODO once we have the corresponding changes in the browser extension, uncomment the following line
   // to start filtering out non-photoed articles
   // let hasPhoto = 'hasPhoto' in req.query ? true : false;
@@ -163,9 +223,13 @@ async function news(req, res, next) {
   let mongoFilter = v1NewsMongoFilter(requestedSites, requestedSections, hasPhoto, next);
   if (!mongoFilter) return;
 
+  if (fromDate) {
+    mongoFilter.created_at = { $gt: fromDate }
+  }
+
   let news;
   try {
-    news = Article.find(mongoFilter);
+    news = Article.find(mongoFilter).select('-body -summary');
     if (limit > 0) {
       news = news.limit(limit);
     }
