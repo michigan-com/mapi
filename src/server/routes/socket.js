@@ -13,6 +13,7 @@ function getSnapshot(model, data) {
       var result = await Promise.all(
         domains.map((d) => (
           model.find({ d })
+            .maxTime(5000)
             .sort({ tm: -1 })
             .limit(1)
             .exec()
@@ -41,50 +42,15 @@ function registerArticleEvent(socket) {
   }));
 }
 
-function registerPopularEvent(socket) {
-  socket.on('get-popular', Catch(async (data) => {
+function registerSocketEvent(socket, socketEvent, model) {
+  socket.on(`get-${socketEvent}`, Catch(async(data) => {
     try {
-      const snapshot = await getSnapshot(db.TopPagesV3, data);
-      socket.emit('got-popular', snapshot);
+      const snapshot = await getSnapshot(model, data);
+      socket.emit(`got-${socketEvent}`, snapshot);
     } catch (e) {
       console.error(e);
-      socket.emti('got-popular', { snapshot: {} });
+      socket.emit(`error-${socketEvent}`, { error: e });
     }
-  }));
-}
-
-function registerQuickstatsEvent(socket) {
-  socket.on('get-quickstats', Catch(async (data) => {
-    const snapshot = await getSnapshot(db.QuickStatsV3, data);
-    socket.emit('got-quickstats', snapshot);
-  }));
-}
-
-function registerTopGeoEvent(socket) {
-  socket.on('get-topgeo', Catch(async (data) => {
-    const snapshot = await getSnapshot(db.TopGeoV3, data);
-    socket.emit('got-topgeo', snapshot);
-  }));
-}
-
-function registerReferrerEvent(socket) {
-  socket.on('get-referrers', Catch(async (data) => {
-    const snapshot = await getSnapshot(db.ReferrersV3, data);
-    socket.emit('got-referrers', snapshot);
-  }));
-}
-
-function registerRecentEvent(socket) {
-  socket.on('get-recent', Catch(async (data) => {
-    const snapshot = await getSnapshot(db.RecentV3, data);
-    socket.emit('got-recent', snapshot);
-  }));
-}
-
-function registerTrafficSeriesEvent(socket) {
-  socket.on('get-traffic-series', Catch(async (data) => {
-    const snapshot = await getSnapshot(db.TrafficSeriesDailyV3, data);
-    socket.emit('got-traffic-series', snapshot);
   }));
 }
 
@@ -134,13 +100,14 @@ function registerAnalyticsSockets(socket) {
 export function newSocketConnection(socket) {
   // Older stuff
   registerArticleEvent(socket);
-  registerPopularEvent(socket);
-  registerQuickstatsEvent(socket);
-  registerTopGeoEvent(socket);
-  registerReferrerEvent(socket);
-  registerRecentEvent(socket);
-  registerTrafficSeriesEvent(socket);
-  registerBreakingNewsEvent(socket);
+
+  registerSocketEvent(socket, 'popular', db.TopPagesV3);
+  registerSocketEvent(socket, 'quickstats', db.QuickStatsV3);
+  registerSocketEvent(socket, 'topgeo', db.TopGeoV3);
+  registerSocketEvent(socket, 'referrers', db.ReferrersV3);
+  registerSocketEvent(socket, 'recent', db.RecentV3);
+  registerSocketEvent(socket, 'traffic-series', db.TrafficSeriesDailyV3);
+  // registerBreakingNewsEvent(socket);
 
   // newer stuff
   registerAnalyticsSockets(socket);
