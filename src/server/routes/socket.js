@@ -13,7 +13,7 @@ function getSnapshot(model, data) {
       var result = await Promise.all(
         domains.map((d) => (
           model.find({ d })
-            .maxTime(5000)
+            // .maxTime(5000)
             .sort({ tm: -1 })
             .limit(1)
             .exec()
