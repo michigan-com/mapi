@@ -48,8 +48,49 @@ router.get('/articles/:idList/', async function(req, res) {
   });
 });
 
-router.get('/article/', async function(req, res, next) {
+router.get('/article/', Catch(async function(req, res, next) {
   // endpoint for frequency count in dashboard, for now
+  let fromDate = null;
+  let domains = [];
+  const limit = parseInt(req.query.limit, 10) || 0;
+
+  if (req.query.fromDate) {
+    const parsedTime = parseInt(req.query.fromDate, 10);
+    if (isNaN(parsedTime)) fromDate = new Date(req.query.fromDate);
+    else fromDate = new Date(parsedTime);
+  }
+  if (req.query.domains) domains = req.query.domains.split(',');
+
+  if (!limit && !fromDate) {
+    const err = new Error('Query params "fromDate" and/or "limit" are required');
+    err.status = 400;
+    err.type = 'json';
+    return next(err);
+  }
+
+  const filterValues = { };
+  if (fromDate) filterValues.created_at = { $gt: fromDate };
+
+
+  if (domains.length !== 0) filterValues.domain = { $in: domains };
+  const articlesQuery = Article.find(filterValues)
+                              .select('-body -summary')
+                              .sort('-timestamp');
+
+  if (limit) articlesQuery.limit(limit);
+  const articles = await articlesQuery.exec();
+
+  if (!articles) {
+    const err = new Error(`Could not find articles with on date ${fromDate}`);
+    err.status = 404;
+    err.type = 'json';
+    return next(err);
+  }
+
+  res.json({ articles });
+}));
+
+router.get('/story-count/', async function (req, res, next) {
   let fromDate = new Date();
   let domains = [];
 
@@ -60,21 +101,20 @@ router.get('/article/', async function(req, res, next) {
   }
   if (req.query.domains) domains = req.query.domains.split(',');
 
-  var queryDate = fromDate.toUTCString();
   const filterValues = { created_at: { $gt: fromDate } };
   if (domains.length !== 0) filterValues.domain = { $in: domains };
   const articles = await Article.find(filterValues)
-                              .select('-body -summary')
+                              .select('timestamp created_at domain url')
                               .sort('-timestamp')
                               .exec();
-  if (!articles) {
-    let err = new Error(`Could not find articles with on date ${fromDate}`);
-    err.status = 404;
-    err.type = 'json';
-    return next(err);
-  }
+  // if (!articles) {
+  //   let err = new Error(`Could not find articles with on date ${fromDate}`);
+  //   err.status = 404;
+  //   err.type = 'json';
+  //   return next(err);
+  // }
 
-  res.json({ articles });
+  res.json({ articles: articles || [] });
 });
 
 router.get('/history/', Catch(async function(req, res) {
