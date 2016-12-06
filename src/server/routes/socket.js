@@ -12,6 +12,8 @@ import * as analytics from './v1/analytics';
 function getSnapshot(model, data) {
   return new Promise(async (resolve, reject) => {
     const domains = data.domains.split(',') || [];
+    logger(`querying for ${domains.length} domains`);
+
     try {
       var result = await Promise.all(
         domains.map((d) => (
@@ -47,12 +49,14 @@ function registerArticleEvent(socket) {
 
 function registerSocketEvent(socket, socketEvent, model) {
   socket.on(`get-${socketEvent}`, Catch(async(data) => {
-    logger(`get-${socketEvent} for ${data.domains.length} domains`);
+    logger(`get-${socketEvent} for ${data.domains.split(',').length} domains`);
     try {
       const snapshot = await getSnapshot(model, data);
       socket.emit(`got-${socketEvent}`, snapshot);
+      logger(`emitting got-${socketEvent} for ${data.domains.split(',').length} domains`);
     } catch (e) {
       console.error(e);
+      logger(`error-${socketEvent} for ${data.domains.split(',').length} domains`);
       socket.emit(`error-${socketEvent}`, { error: e });
     }
   }));
