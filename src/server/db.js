@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import debug from 'debug';
 var logger = debug('app:db');
 
+mongoose.Promise = global.Promise;
+
 export let ObjectId = mongoose.mongo.ObjectId;
 export const safe = { w: 'majority' };
 
