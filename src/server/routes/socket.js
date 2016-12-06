@@ -50,13 +50,15 @@ function registerArticleEvent(socket) {
 function registerSocketEvent(socket, socketEvent, model) {
   socket.on(`get-${socketEvent}`, Catch(async(data) => {
     logger(`get-${socketEvent} for ${data.domains.split(',').length} domains`);
+    const startTime = new Date();
     try {
       const snapshot = await getSnapshot(model, data);
       socket.emit(`got-${socketEvent}`, snapshot);
-      logger(`emitting got-${socketEvent} for ${data.domains.split(',').length} domains`);
+
+      logger(`emitting got-${socketEvent} for ${data.domains.split(',').length} domains, took ${(new Date()) - startTime}`);
     } catch (e) {
       console.error(e);
-      logger(`error-${socketEvent} for ${data.domains.split(',').length} domains`);
+      logger(`error-${socketEvent} for ${data.domains.split(',').length} domains, took ${(new Date()) - startTime}`);
       socket.emit(`error-${socketEvent}`, { error: e });
     }
   }));
