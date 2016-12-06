@@ -13,6 +13,7 @@ function getSnapshot(model, data) {
   return new Promise(async (resolve, reject) => {
     const domains = data.domains.split(',') || [];
     logger(`querying for ${domains.length} domains`);
+    setTimeout(() => { reject('Query took longer than 10 seconds, rejecting'); }, 10000);
 
     try {
       var result = await Promise.all(
