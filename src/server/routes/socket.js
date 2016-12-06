@@ -3,6 +3,9 @@
 
 import { Catch } from '../lib';
 import * as db from '../db';
+import debug from 'debug';
+
+const logger = debug('app:socket');
 
 import * as analytics from './v1/analytics';
 
@@ -44,6 +47,7 @@ function registerArticleEvent(socket) {
 
 function registerSocketEvent(socket, socketEvent, model) {
   socket.on(`get-${socketEvent}`, Catch(async(data) => {
+    logger(`get-${socketEvent} for ${data.domains.length} domains`);
     try {
       const snapshot = await getSnapshot(model, data);
       socket.emit(`got-${socketEvent}`, snapshot);

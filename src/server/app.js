@@ -6,7 +6,8 @@ import mongoose from 'mongoose';
 import Express from 'express';
 import SocketIO from 'socket.io';
 import debug from 'debug';
-var logger = debug('app:socket');
+
+var logger = debug('app:app');
 
 import { router, v1 } from './routes/index';
 import * as sockets from './routes/socket';
