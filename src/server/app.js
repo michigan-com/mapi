@@ -10,8 +10,9 @@ import debug from 'debug';
 var logger = debug('app:app');
 
 import { router, v1 } from './routes/index';
-import * as sockets from './routes/socket';
+import { initSocketLoop } from './sockets';
 import configureMiddleware from './middleware.js';
+import publications from './publications';
 
 var BASE_DIR = path.dirname(__dirname);
 
@@ -52,10 +53,40 @@ function configureRoutes(app, io) {
   app.use('/', router);
   app.use('/v1/', v1);
 
-  io.on('connection', function (socket) {
-    logger('Connected to SocketIO!');
-    sockets.newSocketConnection(socket);
+  io.on('connection', (socket) => {
+    // sockets.newSocketConnection(socket);
+    logger('new socket connection!');
+
+    socket.on('register', (data) => {
+      logger(`register: ${JSON.stringify(data)}`);
+      const domains = data.domains || [];
+
+      for (const domain of domains) {
+        const hostname = domain.replace('.com', '');
+        if (!(hostname in publications)) {
+          logger(`hostname ${hostname} is not valid`);
+        } else {
+          logger(`Socket joining ${domain} room`);
+          socket.join(domain);
+        }
+      }
+    });
+
+    socket.on('unregister', (data) => {
+      const domains = data.domains || [];
+
+      for (const domain of domains) {
+        const hostname = domain.replace('.com', '');
+        if (!(hostname in publications)) {
+          logger(`hostname ${hostname} is not valid`);
+        } else {
+          socket.leave(domain);
+        }
+      }
+    });
   });
+
+  initSocketLoop(io);
 }
 
 module.exports = { app, server, io };
