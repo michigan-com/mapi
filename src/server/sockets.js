@@ -2,7 +2,8 @@
 import debug from 'debug';
 
 import * as db from './db';
-import publications from './publications';
+import { publicationList, regionsOffsets, EST_OFFSET } from './publications';
+import { loadDomainStats } from './routes/v1/analytics';
 
 const logger = debug('app:sockets');
 
@@ -38,6 +39,52 @@ function fetchSnapshotData(domain) {
   });
 }
 
+function fetchSeriesData(domain, utcOffsetValue) {
+  return new Promise(async (resolve, reject) => {
+    // TODO we're guaranteed this is going to be EST because our AWS server is
+    // in Virginia. We should put logic to guarantee that this is the current
+    // time in the Eastern Time Zone
+    const now = new Date();
+
+    // start of the day realtive to this domain's time zone
+    const queryStart = new Date(Date.UTC(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      utcOffsetValue,
+      0,
+      0,
+      0,
+    ));
+
+    const keysToQuery = {
+      platform: 'pf',
+      recirculation: 'recirc,article',
+    };
+    const platformSeriesQueryData = {
+      start: queryStart.getTime(),
+      sort: '+tm',
+      limit: 300,
+      domains: domain,
+    };
+
+    const seriesData = {};
+    for (const keyName of Object.keys(keysToQuery)) {
+      const keys = keysToQuery[keyName];
+      const queryData = { ...platformSeriesQueryData, keys };
+      try {
+        const data = await loadDomainStats.runQuery(queryData);
+        seriesData[keyName] = data;
+      } catch (e) {
+        logger(`ERror fetching ${keyName} series for ${domain}`);
+        seriesData[keyName] = {};
+      }
+    }
+
+    resolve(seriesData);
+  });
+}
+
 function querySnapshots(io) {
   // This returned function is run every interval
   return () => {
@@ -47,9 +94,9 @@ function querySnapshots(io) {
       return;
     }
 
-    logger(`Staring new interval at ${new Date()}`);
-    Object.keys(publications).forEach(async (hostname) => {
-      const { baseUrl } = publications[hostname];
+    logger(`Staring new snapshot loop at  ${new Date()}`);
+    Object.keys(publicationList).forEach(async (hostname) => {
+      const { baseUrl } = publicationList[hostname];
       const room = io.sockets.adapter.rooms[baseUrl] || [];
       if (!room.length) return;
 
@@ -58,17 +105,46 @@ function querySnapshots(io) {
       try {
         const domainData = await fetchSnapshotData(baseUrl);
         logger(`Emitting data for ${baseUrl}`);
-        io.to(baseUrl).emit('got-data', { domain: baseUrl, data: domainData });
+        io.to(baseUrl).emit('got-snapshot-data', { domain: baseUrl, data: domainData });
       } catch (e) {
         logger(`Error fetching data for domain ${baseUrl}`);
         logger(e);
       }
     });
 
-    logger('Done with interval');
+    logger('Done with snapshot interval');
+  };
+}
+
+function queryTimeSeries(io) {
+  return () => {
+    const srvSockets = io.sockets.sockets;
+    if (!Object.keys(srvSockets).length) {
+      logger('Theres no one here! Im going back to sleep');
+      return;
+    }
+
+    logger(`Staring new time series interval at ${new Date()}`);
+    Object.keys(publicationList).forEach(async (hostname) => {
+      const { baseUrl, region } = publicationList[hostname];
+      const room = io.sockets.adapter.rooms[baseUrl] || [];
+      if (!room.length) return;
+
+      const utcOffsetValue = regionsOffsets[region] || EST_OFFSET;
+      try {
+        const data = await fetchSeriesData(baseUrl, utcOffsetValue);
+        io.to(baseUrl).emit('got-series-data', { domain: baseUrl, data });
+      } catch (e) {
+        logger(`Error fetching series data for domain ${baseUrl}`);
+        logger(e);
+      }
+    });
+
+    logger('Done with series interval');
   };
 }
 
 export function initSocketLoop(io) {
-  setInterval(querySnapshots(io), 10000);
+  setInterval(querySnapshots(io), 5000);
+  setInterval(queryTimeSeries(io), 5000);
 }

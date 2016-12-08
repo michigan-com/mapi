@@ -12,7 +12,7 @@ var logger = debug('app:app');
 import { router, v1 } from './routes/index';
 import { initSocketLoop } from './sockets';
 import configureMiddleware from './middleware.js';
-import publications from './publications';
+import { publicationList } from './publications';
 
 var BASE_DIR = path.dirname(__dirname);
 
@@ -63,7 +63,7 @@ function configureRoutes(app, io) {
 
       for (const domain of domains) {
         const hostname = domain.replace('.com', '');
-        if (!(hostname in publications)) {
+        if (!(hostname in publicationList)) {
           logger(`hostname ${hostname} is not valid`);
         } else {
           logger(`Socket joining ${domain} room`);
@@ -77,7 +77,7 @@ function configureRoutes(app, io) {
 
       for (const domain of domains) {
         const hostname = domain.replace('.com', '');
-        if (!(hostname in publications)) {
+        if (!(hostname in publicationList)) {
           logger(`hostname ${hostname} is not valid`);
         } else {
           socket.leave(domain);
