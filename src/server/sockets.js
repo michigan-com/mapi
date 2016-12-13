@@ -28,7 +28,6 @@ function fetchSnapshotData(domain) {
           .exec();
 
         domainData[snapshot] = result || { ...defaultData };
-        logger(snapshot);
       } catch (e) {
         logger(`Error fetching ${snapshot} for ${domain}`);
         logger(e);
@@ -85,66 +84,56 @@ function fetchSeriesData(domain, utcOffsetValue) {
   });
 }
 
-function querySnapshots(io) {
+function snapshotLoopPerDomain(io, domain) {
   // This returned function is run every interval
-  return () => {
-    const srvSockets = io.sockets.sockets;
-    if (!Object.keys(srvSockets).length) {
-      logger('Theres no one here! Im going back to sleep');
-      return;
-    }
-
-    logger(`Staring new snapshot loop at  ${new Date()}`);
-    Object.keys(publicationList).forEach(async (hostname) => {
-      const { baseUrl } = publicationList[hostname];
-      const room = io.sockets.adapter.rooms[baseUrl] || [];
-      if (!room.length) return;
-
-      logger(`Fetching data for ${baseUrl}`);
+  async function snapshotLoop() {
+    const room = io.sockets.adapter.rooms[domain] || [];
+    if (room.length) {
+      logger(`Fetching snapshot data for ${domain}`);
 
       try {
-        const domainData = await fetchSnapshotData(baseUrl);
-        logger(`Emitting data for ${baseUrl}`);
-        io.to(baseUrl).emit('got-snapshot-data', { domain: baseUrl, data: domainData });
+        const domainData = await fetchSnapshotData(domain);
+        logger(`Emitting snapshot data for ${domain}`);
+        io.to(domain).emit('got-snapshot-data', { domain, data: domainData });
       } catch (e) {
-        logger(`Error fetching data for domain ${baseUrl}`);
+        logger(`Error fetching snapshot data for domain ${domain}`);
         logger(e);
       }
-    });
-
-    logger('Done with snapshot interval');
-  };
-}
-
-function queryTimeSeries(io) {
-  return () => {
-    const srvSockets = io.sockets.sockets;
-    if (!Object.keys(srvSockets).length) {
-      logger('Theres no one here! Im going back to sleep');
-      return;
     }
 
-    logger(`Staring new time series interval at ${new Date()}`);
-    Object.keys(publicationList).forEach(async (hostname) => {
-      const { baseUrl, region } = publicationList[hostname];
-      const room = io.sockets.adapter.rooms[baseUrl] || [];
-      if (!room.length) return;
+    setTimeout(snapshotLoop, 5000);
+  }
+
+  snapshotLoop();
+}
+
+function timeSeriesLoopPerDomain(io, domain, region) {
+  async function timeSeriesLoop() {
+    const room = io.sockets.adapter.rooms[domain] || [];
+    if (room.length) {
+      logger(`Fetching series data for ${domain}`);
 
       const utcOffsetValue = regionsOffsets[region] || EST_OFFSET;
       try {
-        const data = await fetchSeriesData(baseUrl, utcOffsetValue);
-        io.to(baseUrl).emit('got-series-data', { domain: baseUrl, data });
+        const data = await fetchSeriesData(domain, utcOffsetValue);
+        logger(`Emitting series data for ${domain}`);
+        io.to(domain).emit('got-series-data', { domain, data });
       } catch (e) {
-        logger(`Error fetching series data for domain ${baseUrl}`);
+        logger(`Error fetching series data for domain ${domain}`);
         logger(e);
       }
-    });
+    }
 
-    logger('Done with series interval');
-  };
+    setTimeout(timeSeriesLoop, 5000);
+  }
+
+  timeSeriesLoop();
 }
 
 export function initSocketLoop(io) {
-  setInterval(querySnapshots(io), 5000);
-  setInterval(queryTimeSeries(io), 5000);
+  Object.keys(publicationList).forEach((hostname) => {
+    const { baseUrl, region } = publicationList[hostname];
+    snapshotLoopPerDomain(io, baseUrl);
+    timeSeriesLoopPerDomain(io, baseUrl, region);
+  });
 }
