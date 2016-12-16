@@ -4,7 +4,6 @@ import path from 'path';
 import http from 'http';
 import mongoose from 'mongoose';
 import Express from 'express';
-import SocketIO from 'socket.io';
 import debug from 'debug';
 
 var logger = debug('app:app');
@@ -18,10 +17,9 @@ var BASE_DIR = path.dirname(__dirname);
 
 var app = Express();
 var server = http.Server(app);
-var io = SocketIO(server);
 
 configureViewEngine(app);
-configureRoutes(app, io);
+configureRoutes(app);
 configureMiddleware(app);
 
 if (app.get('env') == 'development') {
@@ -35,7 +33,7 @@ function configureViewEngine(app) {
   if (app.get('env') == 'development') app.locals.pretty = true;
 }
 
-function configureRoutes(app, io) {
+function configureRoutes(app) {
   /**
    * HACK -- Because michigan.com uses outlook for their @michigan.com email,
    * microsoft requests this file from all subdomains.
@@ -45,48 +43,8 @@ function configureRoutes(app, io) {
     res.send('');
   });
 
-  app.use(function (req, res, next) {
-    req.io = io;
-    next();
-  });
-
   app.use('/', router);
   app.use('/v1/', v1);
-
-  io.on('connection', (socket) => {
-    // sockets.newSocketConnection(socket);
-    logger('new socket connection!');
-
-    socket.on('register', (data) => {
-      logger(`register: ${JSON.stringify(data)}`);
-      const domains = data.domains || [];
-
-      for (const domain of domains) {
-        const hostname = domain.replace('.com', '');
-        if (!(hostname in publicationList)) {
-          logger(`hostname ${hostname} is not valid`);
-        } else {
-          logger(`Socket joining ${domain} room`);
-          socket.join(domain);
-        }
-      }
-    });
-
-    socket.on('unregister', (data) => {
-      const domains = data.domains || [];
-
-      for (const domain of domains) {
-        const hostname = domain.replace('.com', '');
-        if (!(hostname in publicationList)) {
-          logger(`hostname ${hostname} is not valid`);
-        } else {
-          socket.leave(domain);
-        }
-      }
-    });
-  });
-
-  initSocketLoop(io);
 }
 
-module.exports = { app, server, io };
+module.exports = { app, server };

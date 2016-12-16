@@ -4,34 +4,34 @@ import mongoose from 'mongoose';
 import debug from 'debug';
 var logger = debug('app:status');
 
-import { app, server, io } from './app';
+import { app, server } from './app';
 import { connect, disconnect } from './db';
 
 mongoose.connection.on('error', logger);
 
-connect(process.env.MONGO_URI || 'localhost/mapi').then(startListening).catch(function(err) {
+connect(process.env.MONGO_URI || 'localhost/mapi').then(startListening).catch(function (err) {
   throw err;
 });
 
 var port = normalizePort(process.env.NODE_PORT || '3000');
 app.set('port', port);
 
-server.on('close', function() {
-  logger("Closed nodejs application ...");
+server.on('close', function () {
+  logger('Closed nodejs application ...');
   disconnect();
 });
 
 logger(`Environment: ${app.get('env')}`);
 
 process.on('SIGTERM', () => {
-  logger('Shutting down...')
+  logger('Shutting down...');
   server.close(() => {
     process.exit(0);
   });
 });
 
 function startListening() {
-  server.listen(port, '0.0.0.0', function(err) {
+  server.listen(port, '0.0.0.0', function (err) {
     if (err) throw new Error(err);
 
     let host = this.address();
