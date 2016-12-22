@@ -27,6 +27,10 @@ export let Article = mongoose.model('Article', new Schema({
     type: Number,
     index: true,
   },
+  domain: {
+    type: String,
+    index: true,
+  },
 }), 'Article');
 export const Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
 export const Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
