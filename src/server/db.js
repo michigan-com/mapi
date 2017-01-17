@@ -31,6 +31,10 @@ export let Article = mongoose.model('Article', new Schema({
     type: String,
     index: true,
   },
+  timestamp: {
+    type: Date,
+    index: true,
+  },
 }), 'Article');
 export const Toppages = mongoose.model('Toppages', new Schema({}), 'Toppages');
 export const Quickstats = mongoose.model('Quickstats', new Schema({}), 'Quickstats');
